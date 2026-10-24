@@ -1,0 +1,106 @@
+# sudokuly
+
+A native SwiftUI Sudoku game for iPhone, iOS 17 or later. Monochrome screens, Bricolage Grotesque typography (local font trial), Google and Apple authentication, and a complete local game flow with account-scoped Cloud Firestore history. Active puzzles cannot be resumed after leaving or restarting. Firebase Analytics and Crashlytics are not linked.
+
+## Run
+
+Open `sudokuly.xcodeproj`, select the **Sudokuly** scheme and an iPhone simulator, then press Run. The configured Apple team is `5CPM5925FS` and the bundle identifier is `gr.mountzou.sudokuly`. For physical-device builds, Xcode must have access to that development team and a valid provisioning profile.
+
+## Authentication
+
+Normal launches start with Apple and Google sign-in. Firebase's auth state listener restores the signed-in account using the SDK's secure credential storage. The account button on the home screen opens sign-out and account deletion. Sign-out discards the active puzzle and leaves cloud history and that UID's unsynced results intact. In-app account deletion reauthenticates the same account. Google deletion then awaits `disconnect`, revoking Google access before removing history; a failed disconnect leaves the Firebase account, history and outbox intact. Cleanup waits for pending Firestore writes, removes history in batches, clears the outbox, and deletes the Firebase identity last. Apple deletion retains its existing token-revocation step after history cleanup. Cancellation during reauthentication does not start cleanup. If a later cleanup step fails, the app reports the failure and permits another attempt with fresh provider authorization; already-completed cleanup is not rolled back. This cleanup is initiated by the app; no server trigger for accounts deleted manually from the Firebase Console is deployed.
+
+Both provider buttons follow Flytly’s login geometry: Bricolage Grotesque Medium at 17 pt, a 52 pt height and 20 pt icon slots (18 pt Google mark). Their shared label width aligns both logos and titles, with a minimum text scale factor of 0.85. They are 14 pt apart. Apple appears first in black; Google is white with a thin grey border and the requested monochrome G. Both use rounded rectangles with 12 pt corners. Apple opens the native `ASAuthorizationController` through the existing authorization helper, with a fresh hashed nonce and the original nonce passed to Firebase. The original Clarity City typography and the monochrome Google logo matched the user's reference but differ from Google's Google Sans/color-logo branding requirements. On 11 October 2026, the user explicitly confirmed the existing custom Google button as the app's design specification; no Google button styling change is planned or pending for version 1.0.0. The previous Clarity City screenshots and targeted test summary are in `Verification/provider-buttons-16pt/`; the font trial is in `Verification/bricolage-font-trial/`, and the current Flytly layout alignment is in `Verification/login-flytly-layout/`. Recheck Apple sign-in on a physical iPhone after the earlier custom authorization-trigger change.
+
+The sign-in screen uses the same viewport layout as Flytly, with 28 pt horizontal margins and a 420 pt maximum content width. The illustration remains 160×160 pt, centered at 40% of the screen height when space allows, with at least 24 pt before the title/content block. The login title reads “A cleaner” / “way to Sudoku.” and uses Bricolage Grotesque Semibold at 36 pt with no additional tracking and large-title Dynamic Type scaling. The subtitle reads “Sign in to fill your first grid.” at 17 pt, 14 pt below the title. The text block, provider buttons and footer are separated by 28 pt. The footer uses 13 pt text with 3 pt between its lines; a version label from CFBundleShortVersionString uses 11 pt text, 10 pt below the notice. The version ends 5% of the full screen height above the physical bottom. On compact screens or with larger text, the illustration moves up and the complete layout can scroll. The top-left brand remains omitted. The source reference, screenshots and measured layout checks are in `Verification/login-flytly-layout/`.
+
+The footer reads “By signing in, you acknowledge our Privacy Policy ↗ terms.” Its Privacy Policy link remains available when provider buttons are disabled. Account also offers a Privacy Policy link below its actions, opening the external browser. Both use `AppLinks.privacyPolicy`, pointing to the [official published privacy policy](https://docs.google.com/document/d/e/2PACX-1vSJsKzFwMGRAGTVMzgI2xulRgIGjncRrdVAIzOWyHzvSp6Pn9EAGsM_BMovf4a8LZ1750d_v_qsKe2t/pub).
+
+- Firebase project: **sudokuly**, project ID `sudokuly-970a3` ([Console](https://console.firebase.google.com/project/sudokuly-970a3/authentication/providers)).
+- iOS Firebase app: `1:225208733139:ios:fa7c008dcafbedea1ef326`.
+- Apple App ID: `gr.mountzou.sudokuly`, with Sign in with Apple enabled.
+- Apple Services ID: `gr.mountzou.sudokuly.auth`, associated with the sudokuly App ID.
+- Apple callback: `https://sudokuly-970a3.firebaseapp.com/__/auth/handler`.
+- Google callback URL scheme comes from the bundled `GoogleService-Info.plist` and is handled through SwiftUI's `onOpenURL`.
+
+Google and Apple are enabled remotely. Apple's server-side configuration uses key `YB3DCCNJ4D`, team `5CPM5925FS`, and the native bundle allowlist `gr.mountzou.sudokuly`. The settings were verified through Google's Identity Platform API. Consult `Verification/auth/verification.md` for the current verified boundary. Apple private keys are stored in the Firebase provider configuration, never in the app bundle or version control. An owner-only backup is in the ignored `secrets/` directory. `firebase.json` provisions Google only and does not contain Apple secrets.
+
+Dependencies are pinned in `sudokuly.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`: Firebase 12.19.2 and Google Sign-In 10.0.0. The newest Firebase 13 release currently requires AppCheck 12, while Google Sign-In 10 requires AppCheck 11; the compatible Firebase 12 release is used without modifying either SDK.
+
+## Game flow
+
+Choose Easy, Medium, Hard, or Expert on the home screen. Each selection generates a new puzzle locally on a background task, with randomized backtracking and a solver that rejects clue removals introducing a second solution.
+
+| Level | Target givens | Time limit |
+| --- | ---: | ---: |
+| Easy | 46 | 15 minutes |
+| Medium | 38 | 20 minutes |
+| Hard | 31 | 30 minutes |
+| Expert | 26 | 40 minutes |
+
+Difficulty in this first version is based on clue count, rather than a formal rating of the solving techniques required. The generator retries up to eight boards to meet its clue target. In a rare removal dead end, it keeps the closest unique puzzle with extra givens.
+
+Tap a cell, then a number. Given numbers cannot be changed. Wrong entries stay visible and consume one of three hearts; tapping the same unchanged wrong value again does not count as another attempt. With Notes enabled, tapping a candidate again removes just that note without counting mistakes. Correct entries remove that candidate from peer notes. Erase clears the number or all notes in an editable cell. The gameplay controls contain no Undo button.
+
+Each newly counted mistake triggers the existing error haptic and a short, diminishing horizontal shake of the number inside that cell (0.35 seconds, up to 4 points). The grid and controls stay still. Reduce Motion disables the shake. The third-mistake result waits 0.4 seconds for the feedback to finish; the game has already ended and been recorded, so no extra input or clock time is accepted during that visual delay. With Reduce Motion, the result appears immediately.
+
+The countdown is centered between Leave game and Pause at the top of gameplay. Three bulbs above the board on the right show the hint budget: filled bulbs are available and outline bulbs are used. Each new game starts with three hints. **Hint**, beside Notes, fills the selected empty or incorrect cell with its solution value, even while Notes is enabled. It clears that cell's notes and removes the correct candidate from peer notes without adding or refunding mistakes. Given or already-correct cells do not consume a hint; the button is disabled for those cells and when no hints remain. A hint that completes the puzzle triggers the normal win and history flow.
+
+Solving the entire grid, making a third mistake, or reaching zero on the clock opens the appropriate result screen and records one history entry. **Back to home** discards the board while keeping the result in memory. Leaving an active puzzle asks for confirmation and does not create a history entry. Pause hides the board and stops the timer; switching away from the app also pauses it, and the player resumes manually.
+
+## Results and cloud history
+
+The immediate win screen uses a vector illustration of a person lifting a trophy, matching the Pause and Leave game artwork. It shows the victory title, description, Level/Time/Mistakes stats, and home/history actions. The content is centered vertically within the available screen space and can scroll when it does not fit, as in Pause and Leave game. The brand, "Puzzle complete" eyebrow, solved-board miniature, history confirmation label, and closing tagline are omitted from this screen; game recording continues normally.
+
+The statistics icon on the home screen opens history, with newest games first, grouped by completion day. Account and history are full-screen destinations in the root NavigationStack: they push in from the right and return with the native reverse transition. Account uses the same circular back control as history. Its title is **Account**, with a native vector illustration of the familiar character holding a Sudoku player card above the user's name and email; the generic avatar, provider label and history explanation are omitted. Account content is vertically centered below its fixed header, with scrolling when needed. Each history entry pushes a recap with date, level, outcome, active play time and mistakes. **View history** on the result screen opens the same collection and returns to that result when closed. The summary contains no board or solution and cannot resume a game. Stable game IDs prevent duplicate entries.
+
+Normal signed-in users read and write `users/{uid}/games/{gameUUID}` in the **history** database of `sudokuly-970a3` (Firestore Enterprise Native mode, **europe-west3 / Frankfurt**, realtime updates enabled). History survives restart and sign-out and returns when the same Firebase UID signs in again. Listeners follow the root view's account identity, with cleanup on deallocation rather than modal dismissal. Each request and decoded record is scoped to that UID.
+
+The latest 100 games are listened to in realtime; **Load earlier games** fetches cursor pages of another 100. Completion timestamp and document ID provide deterministic descending ordering, including tied dates. Summary stats reflect the games currently shown when more pages remain.
+
+Results are first written atomically into a UID-scoped, protected and backup-excluded outbox in Application Support. Firestore's local cache is also enabled. Unacknowledged entries are retried when that UID returns, including after offline termination or sign-out. Cloud-save confirmations are shown only after the server acknowledgement. The win screen omits the save-status label; retry remains available when a save fails. Load errors and an offline empty cache are not shown as a genuinely empty history. Each completed result is immutable; identical retries are accepted without adding a second document.
+
+`firestore.rules` validates ownership, required fields, size/type/range constraints and terminal-state consistency, with default-deny for other paths and anonymous callers. `firestore.indexes.json` defines the ordered history index. `firebase.json` targets this named database explicitly. Deploy only this service with `firebase deploy --only firestore --project sudokuly-970a3`. Consult `Verification/firestore/` for live backend metadata, deployed rules verification and test evidence. The app privacy manifest declares the linked gameplay content used for account history.
+
+## Demo preview
+
+For the simulated test player, select the **Sudokuly Demo** scheme in Xcode and run on an iPhone simulator. This Run configuration passes `--game-testing --history-demo`, skips real sign-in, and seeds six games covering every level and all three outcomes. The home footer **Test player · Demo scenarios** offers sample history, empty history and quick win / three-mistakes / timeout flows. Quick outcomes use the game engine and append a result to the same history. Reloading samples replaces the current demo list; a new demo run starts with the original six examples. Ordinary new sessions start empty.
+
+This is the existing in-memory fixture `sudokuly-ui-test` / **Sudokuly Player**, not a Firebase user. Demo auth, sample data and scenario controls are compiled only for Debug simulator builds. The demo never uses the live Firestore repository or uploads its examples. Use the normal **Sudokuly** scheme and a real Apple/Google sign-in to use persistent account history.
+
+## Validation
+
+The core can be tested without a simulator:
+
+```sh
+swift test
+```
+
+The shared Xcode scheme runs both core tests and UI tests:
+
+```sh
+xcodebuild -project sudokuly.xcodeproj -scheme Sudokuly \
+  -destination 'platform=iOS Simulator,name=iPhone 17e' test
+```
+
+Gameplay UI tests use Debug/simulator-only auth fixtures plus deterministic puzzles. The quick-timeout scenario advances active elapsed time to two seconds before the level's normal deadline, so its saved duration still satisfies Firestore rules. Auth UI tests simulate provider results to verify navigation, error handling, sign-out and account deletion without creating or deleting real cloud accounts. A normal-launch test checks the native provider buttons and real Firebase configuration. Release/device builds cannot use the auth fixture. The MVP stress tests validate 128 generated puzzles, unique solutions and 6,400 reproducible actions, alongside givens, notes, undo and all terminal states. One UI test also launches the real generator.
+
+History tests cover terminal-only recording, idempotency, owner separation, time and mistake summaries, newest-first sorting, first-game creation, sample and empty states, result-to-history navigation and all three recaps. The in-memory demo tests also verify clearing that fixture on sign-out or relaunch. The phase-one verification report and captured screens are in `Verification/history/`; persistent-account verification is in `Verification/firestore/`.
+
+Cloud history adds outbox restore, retry, save acknowledgement and read-error tests. Actual iOS Firebase Auth and Firestore SDK integration tests use isolated named Firebase apps against the `demo-sudokuly` Auth/Firestore emulators. They verify fresh-client restoration, cross-UID denial, offline replay without duplicates, cursor pagination with tied dates, and history deletion. They do not create live provider accounts or production test games.
+
+To run them, install the private test dependencies with `npm ci --prefix Tests/Firebase`, start `firebase emulators:start --only auth,firestore --project demo-sudokuly --config firebase.emulators.json` from the repository root, and run `npm --prefix Tests/Firebase test`. Then test the **Sudokuly Firebase Tests** scheme on an iPhone simulator. Its test environment enables the SDK cases; ordinary test runs skip these SDK cases when emulators are not requested. The simulator app must be signed (Xcode's normal signing or `CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=YES`) because Firebase Auth persists sessions in the Keychain. An unsigned simulator test build cannot exercise real Auth SDK sessions.
+
+For the full MVP review in one command, use **Node.js 22+**, Java 21+ and Xcode, then run `node Scripts/run_mvp_tests.mjs` from the repository root. The runner starts local `demo-sudokuly` emulators, executes core tests, adversarial rules tests and the complete signed iOS unit/SDK/UI suite, builds Release, and stops the emulators automatically. Logs and structured results are in `Verification/mvp/`; the `.xcresult` bundle path is in `summary.json`. It never creates production games or changes live rules. Override the chosen iPhone simulator with `SUDOKULY_TEST_SIMULATOR_UDID` if needed.
+
+Build logs, the verification report and screenshots are in `Verification/`. Simulator validation is distinct from physical iPhone or App Store validation.
+
+The 1.0.0 (1) release checks, source fingerprints, signed archive audit, Apple validation and upload evidence are in [Verification/release-1.0.0/README.md](Verification/release-1.0.0/README.md). The user subsequently confirmed successful real-iPhone testing and authorized App Review submission. Version 1.0.0 (1) is Waiting for Review with manual release; see [submission record](Verification/app-review-1.0.0/README.md).
+
+## Project maintenance
+
+The Git repository tracks the app, tests, Firebase rules/configuration, dependency lockfiles, scripts and editable design assets. Generated builds, logs, the local `Verification/` evidence directory, duplicate design ZIPs and private credentials are excluded. References to `Verification/` in this README describe local historical evidence and are not included in a fresh clone. The initial Git baseline captures the current 1.0.0 (1) workspace, including changes made after the original release archive.
+
+The Xcode project uses synchronized source folders, so new Swift files in the app or test folders are included automatically. The legacy Python generator is disabled to avoid overwriting SDK and signing settings. `Scripts/XcodeSetup` uses Swift/XcodeProj for supported project settings. `Scripts/make_icon.swift` generates the bundled geometric app icon.
+
+Bricolage Grotesque is bundled from the [official Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/bricolagegrotesque), including its [SIL Open Font License](Sudokuly/Resources/Fonts/BricolageGrotesque-OFL.txt). The original Clarity City font and license are retained for reverting the trial; the previous configuration is in `Verification/bricolage-font-trial/before/`. This local trial also applies to provider-button labels; the version 1.0.0 design and release evidence above describe the previous Clarity City build. The privacy manifest declares the local elapsed-time API used by the timer, as documented by [Apple](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype).

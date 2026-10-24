@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>225208733139-472euts303f1gdgm08a8q5fji4mhobem.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.225208733139-472euts303f1gdgm08a8q5fji4mhobem</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCRfGeGEsFoWJsDCAVGQ31v6WXASMaFi-A</string>
+	<key>GCM_SENDER_ID</key>
+	<string>225208733139</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>gr.mountzou.sudokuly</string>
+	<key>PROJECT_ID</key>
+	<string>sudokuly-970a3</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sudokuly-970a3.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:225208733139:ios:fa7c008dcafbedea1ef326</string>
+</dict>
+</plist>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <g stroke="#202320" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- A relaxed, seated figure: open shapes with a few solid ink accents. -->
+    <path d="M92 143c-15 5-29 13-44 26-9 8-12 17-6 24 7 9 28 14 52 11l31-8 30 8c20 2 39-2 45-11 5-8 1-16-10-24l-42-28Z" fill="#fff"/>
+    <path d="M81 154c8 4 22 12 37 25 13 11 27 18 41 21 13 3 27 1 36-5-9 10-30 12-46 7l-34-13-25-20" fill="#202320"/>
+    <path d="M157 153c-12 5-25 13-38 23-12 9-21 17-34 21-14 5-28 5-40-1"/>
+    <path d="m78 169 25 14M149 165l-15 10"/>
+    <!-- Bare feet at the crossing, with sparse toe details. -->
+    <path d="M98 184c-9-3-19-4-23 0-3 3-1 7 5 9l21 5c6 1 11-1 13-5" fill="#fff"/>
+    <path d="m82 185 9 3m-10 1 9 3" stroke-width="1.7"/>
+    <path d="M137 186c7-4 15-7 21-5 4 1 4 5-1 8l-15 8c-6 3-11 2-15-1" fill="#fff"/>
+    <path d="m154 185-8 5m6-1-7 4" stroke-width="1.7"/>
+    <!-- Soft, loose shirt. -->
+    <path d="M104 77c-12 2-22 9-28 19l-10 21 19 10 8-13-5 40c17 9 44 9 62-1l-5-38 10 12 17-10-11-22c-6-11-16-16-28-18Z" fill="#fff"/>
+    <path d="m94 103-2 18m52-18 2 18M103 146c11 3 24 3 33 0" stroke-width="1.8"/>
+    <path d="m71 112 17 9m64 0 16-9" stroke-width="1.8"/>
+    <!-- Forearms relax onto the knees. -->
+    <path d="m70 119-13 25c-2 5-1 9 4 10 7 2 12-2 17-7l14-18-8-7-15 17" fill="#fff"/>
+    <path d="m168 119 15 25c3 5 1 9-4 10-6 1-13-3-18-8l-14-16 9-8 16 17" fill="#fff"/>
+    <!-- Small, open meditation gestures. -->
+    <path d="M91 130c3-1 7-5 9-8 2-3 4-2 4 0 0 3-2 5-4 7 4 0 7 2 6 5-1 4-8 5-13 2l-7-5" fill="#fff"/>
+    <path d="M99 129c3-1 5 0 4 2-1 2-3 2-5 0" stroke-width="1.7"/>
+    <path d="M148 130c-3-1-7-5-9-8-2-3-4-2-4 0 0 3 2 5 4 7-4 0-7 2-6 5 1 4 8 5 13 2l7-5" fill="#fff"/>
+    <path d="M139 129c-3-1-5 0-4 2 1 2 3 2 5 0" stroke-width="1.7"/>
+    <!-- Neck and gently tilted face. -->
+    <path d="m109 65-2 15c6 9 21 10 28-1l-5-16" fill="#fff"/>
+    <path d="M108 71c7 5 14 6 23 1" stroke-width="1.8"/>
+    <path d="M98 41c-2-16 11-26 25-23 16 2 24 15 20 32l-4 15c-3 12-11 18-21 14-9-3-17-13-18-24-7 0-10-13-5-15 2-1 3 0 5 3" fill="#fff"/>
+    <!-- Inky, rounded hair is the main dark accent. -->
+    <path d="M99 51c-3-5-6-11-5-17-6-6-3-14 4-16-1-7 8-11 14-8 5-7 15-7 20-1 8-3 15 2 15 8 9 2 12 10 7 16-1 7-8 11-16 8-8-2-15-7-19-13-2 9-7 16-13 19l-2 10-4-2Z" fill="#202320" stroke-width="2"/>
+    <path d="M110 53c2 3 5 4 8 2m10 2c3 2 6 2 8-1" stroke-width="1.9"/>
+    <path d="m124 55-1 8 4 1m-11 5c3 4 8 5 12 2" stroke-width="1.7"/>
+    <path d="m98 45 2 5" stroke-width="1.5"/>
+  </g>
+</svg>

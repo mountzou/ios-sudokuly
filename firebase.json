@@ -1,0 +1,20 @@
+{
+  "firestore": {
+    "database": "history",
+    "edition": "enterprise",
+    "location": "europe-west3",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "authorizedDomains": ["sudokuly-970a3.firebaseapp.com", "sudokuly-970a3.web.app"],
+    "providers": {
+      "anonymous": false,
+      "emailPassword": false,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "sudokuly",
+        "supportEmail": "chrismountzou@gmail.com"
+      }
+    }
+  }
+}

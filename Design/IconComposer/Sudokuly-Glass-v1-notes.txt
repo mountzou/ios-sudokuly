@@ -1,0 +1,16 @@
+Sudokuly Glass v1 — preview only
+
+Open Sudokuly-Glass-v1.icon in Icon Composer.
+The original SVG geometry is unchanged: 3 × 3 tiles, seven dark and two light.
+Effects: specular on, blur material 0, translucency 12%, natural shadow 22%.
+The default appearance keeps the original palette; dark uses a dark background
+and lighter foreground for visibility. Previews use design generation 27.
+
+Previews/Sudokuly-Glass-v1-default.png and Sudokuly-Glass-v1-dark.png
+were rendered with Apple's bundled ictool 27.0 (129), at 1024 × 1024.
+Transparent outer corners in the exported preview are the system icon mask.
+
+The document is saved separately in Design/IconComposer. The app's bundled
+AppIcon.png and Xcode target configuration have not been replaced.
+
+Verification: Sudokuly-Glass-v1-verification.json.

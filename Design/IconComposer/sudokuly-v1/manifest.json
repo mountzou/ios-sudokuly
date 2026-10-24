@@ -1,0 +1,38 @@
+{
+  "backgroundSRGB": "#F4F4F1",
+  "canvas": {
+    "height": 1024,
+    "width": 1024
+  },
+  "cornerRadius": 23,
+  "darkSRGB": "#292929",
+  "foregroundLayers": [
+    "SVG/01-dark-tiles.svg",
+    "SVG/02-light-tiles.svg"
+  ],
+  "gap": 27,
+  "lightSRGB": "#CFCFCF",
+  "note": "Flat source layers only. Liquid Glass effects are configured in Icon Composer.",
+  "outerMargin": 272,
+  "pngRecompositionComparison": {
+    "changedPixels": 630,
+    "maximumChannelDifferenceOutOf255": 1
+  },
+  "source": "/Users/mountzou/ios-sudokuly/Sudokuly/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+  "sourceRedrawComparison": {
+    "changedPixels": 0,
+    "maximumChannelDifferenceOutOf255": 0
+  },
+  "tileSize": 142,
+  "sourceSHA256": "f716bee0b5f7341e348c7751d11b8856a003a95b49cda663742dd6aa300bbad6",
+  "filesSHA256": {
+    "PNG/01-dark-tiles.png": "e32abbf2ff60ee756db1fa64873d6e76758f50e3f1bc5c320129b6b3761b51ba",
+    "PNG/02-light-tiles.png": "6ffe6aca6d890d0b98340af7c4888f5318e8ca22914e60f82d11c2d855d17ed1",
+    "Reference/00-background.png": "366ca31d0b3a2980b14a3c24a717745984748d359a34144757e54d2c1c14c761",
+    "Reference/original-app-icon.png": "f716bee0b5f7341e348c7751d11b8856a003a95b49cda663742dd6aa300bbad6",
+    "Reference/recomposed-flat.png": "f3cc8453d336ab92c85fd34d811a0015cdeb9f5f8957492ba21805eb2f0fc07d",
+    "START-HERE.txt": "b7cadb62dec910c80ae2c0b321a8d3cb77d3f076b3bbe29c77b37b1fb9b4fd37",
+    "SVG/01-dark-tiles.svg": "318ea6029b7226200e6d832165b773583111d8c25af00deefe85d64f8f385bad",
+    "SVG/02-light-tiles.svg": "da168851d68fd1a7b0d512d0ce892f4f560cbe403ffe49f2c0cd59922dd5e918"
+  }
+}

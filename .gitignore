@@ -1,0 +1,44 @@
+.DS_Store
+.build/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+firebase-debug.log*
+*.p8
+secrets/
+Scripts/XcodeSetup/.build/
+node_modules/
+firestore-debug.log*
+ui-debug.log*
+
+# Generated verification evidence and distribution artifacts stay local.
+/Verification/
+/Design/IconComposer/*.zip
+*.xcarchive/
+*.xcresult/
+*.xcdistributionlogs/
+*.ipa
+*.dSYM/
+*.dSYM.zip
+*.log
+
+# Local credentials and signing material.
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+*.key
+*.pem
+*service-account*.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# Local tool caches.
+.firebase/
+__pycache__/
+*.pyc
+.swiftpm/

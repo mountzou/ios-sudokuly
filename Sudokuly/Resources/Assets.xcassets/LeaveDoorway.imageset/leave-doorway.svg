@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <g transform="translate(-23 0)" stroke="#202320" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- An open doorway, drawn with the same light outlines as the pause figure. -->
+    <path d="M147 211V22h72v189"/>
+    <path d="M154 205V29h58v176" stroke-width="1.8"/>
+    <path d="m212 29-42 18v178l42-20Z" fill="#fff"/>
+    <path d="M175 51v165" stroke-width="1.5"/>
+    <path d="M178 118v12m-5-7h10" stroke-width="3"/>
+    <!-- A gentle step towards the open door. -->
+    <path d="m91 148 23 5-14 28-9 22-13-4 8-27Z" fill="#fff"/>
+    <path d="m109 151 16-1-1 26 22 25-11 9-23-25c-3-3-4-7-4-12Z" fill="#fff"/>
+    <path d="M81 191l12 4M131 205l10-8M104 157l-8 17" stroke-width="1.8"/>
+    <path d="m79 198 12 5-1 8H68c-3-3 1-6 6-8Z" fill="#202320"/>
+    <path d="m137 201 9-2 7 5 13 4c4 1 4 5-1 6h-21l-10-7Z" fill="#202320"/>
+    <path d="M69 211h20m57 3h18" stroke="#fff" stroke-width="1.4"/>
+    <!-- The relaxed back arm, kept clear of the walking legs. -->
+    <path d="m77 113-9 29c-2 6-1 11 1 17l3 9c1 3 4 2 4-1l-1-10 3 5c2 3 5 1 3-3l-5-11 12-28" fill="#fff"/>
+    <path d="m73 151 2 6" stroke-width="1.6"/>
+    <!-- A loose white shirt with only a few seam lines. -->
+    <path d="M97 80c-11 2-19 10-23 21l-5 16 17 7 4-11-4 38c9 6 26 8 40 1l-5-37 6 8 15-11-12-20c-5-8-13-12-22-13Z" fill="#fff"/>
+    <path d="M73 112l14 6M126 117l12-8M97 146c7 2 15 2 22 0M95 102l-4 19" stroke-width="1.8"/>
+    <!-- The forward arm reaches for, and wraps around, the door handle. -->
+    <path d="m132 116 10 13c3 4 7 5 12 3l13-5 5 3c3 1 7-1 8-4l-1-7c0-3-3-3-4-1l-1 4-4-3c-2-2-4-1-4 1l-15 4-10-15" fill="#fff"/>
+    <path d="m171 123 5 2m-6 1 5 2" stroke-width="1.5"/>
+    <!-- Neck and a softly turned profile, matching the pause character. -->
+    <path d="m100 69-2 14c5 7 15 8 21 1l-7-14" fill="#fff"/>
+    <path d="M91 45c1-12 12-18 24-12 10 6 10 18 8 25l5 7c1 2-1 4-5 4l-2 9c-2 8-10 12-18 7-7-4-10-12-11-20-6 0-9-10-5-13 2-1 3 0 5 2" fill="#fff"/>
+    <path d="M90 60c-3-5-7-7-6-14-5-6-2-13 4-15 0-7 7-11 13-9 4-6 13-6 17-1 8-2 15 3 14 9 6 4 6 11 0 15-3 3-10 2-15-3-4-4-6-7-7-9-1 10-7 17-14 19l-2 9Z" fill="#202320" stroke-width="2"/>
+    <path d="M111 57c2 2 5 3 7 1m-8 17c3 2 6 2 9 0" stroke-width="1.8"/>
+    <path d="m90 57 3 4" stroke-width="1.5"/>
+  </g>
+</svg>

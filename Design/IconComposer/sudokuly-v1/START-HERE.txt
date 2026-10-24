@@ -1,0 +1,46 @@
+Sudokuly — layers για το Icon Composer
+
+Το σημερινό σχέδιο, χωρισμένο σε layers. Δεν έχουν προστεθεί εφέ glass
+και δεν έχει αντικατασταθεί το icon της εφαρμογής.
+
+Προτεινόμενη εισαγωγή
+1. Xcode > Open Developer Tool > Icon Composer. Δημιούργησε νέο αρχείο
+   για iPhone/iPad/Mac, σε καμβά 1024 × 1024, και αποθήκευσέ το ως AppIcon.icon.
+2. Ρύθμισε το πραγματικό background του icon σε Solid, sRGB #F4F4F1.
+   Το φόντο προεπισκόπησης του καμβά είναι διαφορετική ρύθμιση.
+3. Σύρε στη sidebar μόνο αυτά τα δύο αρχεία από τον φάκελο SVG:
+   01-dark-tiles.svg   — επτά σκούρα πλακίδια, sRGB #292929
+   02-light-tiles.svg  — δύο ανοιχτά πλακίδια, sRGB #CFCFCF
+4. Κράτησε τα δύο layers στο ίδιο group, στο ίδιο βάθος, με scale 100%
+   και χωρίς μετατόπιση. Οι θέσεις τους περιλαμβάνονται στον πλήρη καμβά.
+5. Σύγκρινε με το Reference/original-app-icon.png με απενεργοποιημένα εφέ.
+   Έπειτα ενεργοποίησε και ρύθμισε το Liquid Glass μέσα στο Icon Composer.
+   Έλεγξε default, dark και mono/clear εμφανίσεις πριν από ενσωμάτωση στο Xcode.
+
+Εναλλακτικά PNG
+Ο φάκελος PNG περιέχει τα ίδια δύο foreground layers με διαφανές φόντο,
+σε 1024 × 1024. Χρησιμοποίησε είτε τα SVG είτε τα PNG, όχι και τα δύο μαζί.
+Το Reference/00-background.png είναι δείγμα του αρχικού φόντου.
+Δεν χρειάζεται να εισαχθεί ως foreground layer: όρισε το native background
+μέσα στο Icon Composer για να έχεις ανεξάρτητο έλεγχο των εμφανίσεων.
+
+Διατήρηση σχεδίου
+Πλέγμα 3 × 3, πλακίδια 142 × 142, διάκενο 27, περιθώριο 272,
+ακτίνα γωνιών 23. Τα ανοιχτά πλακίδια είναι πάνω δεξιά και κάτω αριστερά.
+Τα SVG περιέχουν τα πραγματικά Bezier paths του αρχικού AppKit σχεδίου.
+Δεν περιέχουν σκιές, εξωτερική μάσκα icon ή προενσωματωμένα εφέ glass.
+
+Έλεγχος
+Η επανασχεδίαση από το αρχικό script έχει μηδενική διαφορά pixels από
+το bundled icon. Η επανασύνθεση των PNG layers διαφέρει σε 630 pixels,
+με μέγιστη απόκλιση ενός βήματος ανά κανάλι (1/255), λόγω στρογγυλοποίησης
+του alpha στις καμπύλες ακμές. Αναλυτικά: manifest.json.
+Το Reference/recomposed-flat.png δείχνει την επανασύνθεση χωρίς εφέ.
+Το πακέτο δεν αποτελεί αποθηκευμένο ή οπτικά εγκεκριμένο αρχείο .icon.
+
+Αναπαραγωγή από τη ρίζα του project
+CLANG_MODULE_CACHE_PATH=/private/tmp/sudokuly-icon-module-cache swift Scripts/export_icon_composer_layers.swift
+
+Apple documentation
+https://developer.apple.com/documentation/xcode/creating-your-app-icon-using-icon-composer
+https://developer.apple.com/videos/play/wwdc2025/361/

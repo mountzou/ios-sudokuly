@@ -1,0 +1,601 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		12375D86F81A6F4398B0938B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 924978EAB2CD02BAA6065B5B /* FirebaseFirestore */; };
+		6371C7241C24208CF6AB821F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5C7C5B002B3C775B642AE91D /* FirebaseAuth */; };
+		7FD1845891EF4CB34959F669 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 570C05C3FA5DF5E93C0FABA9 /* GoogleSignIn */; };
+		BEA86A0FECD8675113891850 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = "TEMP_BF091244-CF61-48FF-9EA2-35BC75C5A10E" /* FirebaseCore */; };
+		C73F2AF59BA29570C97EC842 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 108B67A3D9F8108837913B03 /* FirebaseCore */; };
+		D77A3F089ED3E024BF725A32 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 722276E5C058A4DB03A9B789 /* GoogleSignInSwift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8183DC74BEEF4F3A38EE085B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C5D42570A1622333E8BD386;
+			remoteInfo = Sudokuly;
+		};
+		CAFC6EF32C4D1E0757E3AEEC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C5D42570A1622333E8BD386;
+			remoteInfo = Sudokuly;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		11C4B71F6010AB7A790A8087 /* SudokulyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SudokulyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		455E2D92FD94947F49145D81 /* SudokulyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SudokulyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7633C8F730B133BE85F55258 /* sudokuly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sudokuly.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		"TEMP_DA77625D-658C-4E4D-B7C2-936FBA026C56" /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4C5D42570A1622333E8BD386 /* Sudokuly */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		934EF130DE437F97C20BA1AA /* Sudokuly */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = ("TEMP_DA77625D-658C-4E4D-B7C2-936FBA026C56" /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Sudokuly; sourceTree = "<group>"; };
+		93FA4EB75290AB92FFBAC993 /* Tests/SudokulyTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Tests/SudokulyTests; sourceTree = "<group>"; };
+		9FD1661837F34F39025333B6 /* Tests/SudokulyUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Tests/SudokulyUITests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		63EB513383CE66E41552E8E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91A2DA425BB76C62E551AC4D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4BAD4E5D1F68865985218B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BEA86A0FECD8675113891850 /* FirebaseCore in Frameworks */,
+				C73F2AF59BA29570C97EC842 /* FirebaseCore in Frameworks */,
+				6371C7241C24208CF6AB821F /* FirebaseAuth in Frameworks */,
+				7FD1845891EF4CB34959F669 /* GoogleSignIn in Frameworks */,
+				D77A3F089ED3E024BF725A32 /* GoogleSignInSwift in Frameworks */,
+				12375D86F81A6F4398B0938B /* FirebaseFirestore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B28B7AF69320201D1CF206EB = {
+			isa = PBXGroup;
+			children = (
+				FBDC4F23F93125BBEEAE800C /* Products */,
+				934EF130DE437F97C20BA1AA /* Sudokuly */,
+				93FA4EB75290AB92FFBAC993 /* Tests/SudokulyTests */,
+				9FD1661837F34F39025333B6 /* Tests/SudokulyUITests */,
+			);
+			sourceTree = "<group>";
+		};
+		FBDC4F23F93125BBEEAE800C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7633C8F730B133BE85F55258 /* sudokuly.app */,
+				11C4B71F6010AB7A790A8087 /* SudokulyTests.xctest */,
+				455E2D92FD94947F49145D81 /* SudokulyUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4C5D42570A1622333E8BD386 /* Sudokuly */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22043BE2A83787A7A46EB14C /* Build configuration list for PBXNativeTarget "Sudokuly" */;
+			buildPhases = (
+				17B430AC95927535D0BB8E24 /* Sources */,
+				F4BAD4E5D1F68865985218B8 /* Frameworks */,
+				2CF7EBD4CAE8ECEA9DDFB98B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				934EF130DE437F97C20BA1AA /* Sudokuly */,
+			);
+			name = Sudokuly;
+			packageProductDependencies = (
+				108B67A3D9F8108837913B03 /* FirebaseCore */,
+				5C7C5B002B3C775B642AE91D /* FirebaseAuth */,
+				570C05C3FA5DF5E93C0FABA9 /* GoogleSignIn */,
+				722276E5C058A4DB03A9B789 /* GoogleSignInSwift */,
+				924978EAB2CD02BAA6065B5B /* FirebaseFirestore */,
+			);
+			productName = sudokuly;
+			productReference = 7633C8F730B133BE85F55258 /* sudokuly.app */;
+			productType = "com.apple.product-type.application";
+		};
+		821E6800A113C4B8A0751CA1 /* SudokulyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A724E388F4A01AC1ADC527B /* Build configuration list for PBXNativeTarget "SudokulyUITests" */;
+			buildPhases = (
+				1D0BFBD26B86F0123683628D /* Sources */,
+				63EB513383CE66E41552E8E9 /* Frameworks */,
+				EA7E93793E68FF18C9486F47 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D21FE845851506732F013B7A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9FD1661837F34F39025333B6 /* Tests/SudokulyUITests */,
+			);
+			name = SudokulyUITests;
+			packageProductDependencies = (
+			);
+			productName = SudokulyUITests;
+			productReference = 455E2D92FD94947F49145D81 /* SudokulyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		9AF0F136EA028500B0435161 /* SudokulyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 758C7B49C7582E02F8B48C68 /* Build configuration list for PBXNativeTarget "SudokulyTests" */;
+			buildPhases = (
+				2313FF78466966DEC4D52330 /* Sources */,
+				91A2DA425BB76C62E551AC4D /* Frameworks */,
+				F13BF5CB7A8B7C5FECAC3F6A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1AB272A94F0AE0AA97076B2F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				93FA4EB75290AB92FFBAC993 /* Tests/SudokulyTests */,
+			);
+			name = SudokulyTests;
+			productName = SudokulyTests;
+			productReference = 11C4B71F6010AB7A790A8087 /* SudokulyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		98F54143AB4E86B28C3AFEE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					4C5D42570A1622333E8BD386 = {
+						DevelopmentTeam = 5CPM5925FS;
+						SystemCapabilities = {
+							com.apple.SignInWithApple = {
+								enabled = 1;
+							};
+						};
+					};
+				};
+			};
+			buildConfigurationList = 640DC9EFD529235A8D9E2727 /* Build configuration list for PBXProject "sudokuly" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B28B7AF69320201D1CF206EB;
+			packageReferences = (
+				2E284E49D15912C84D8883CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				00A5FE4FE829247B89B83C17 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
+			productRefGroup = FBDC4F23F93125BBEEAE800C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4C5D42570A1622333E8BD386 /* Sudokuly */,
+				9AF0F136EA028500B0435161 /* SudokulyTests */,
+				821E6800A113C4B8A0751CA1 /* SudokulyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2CF7EBD4CAE8ECEA9DDFB98B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA7E93793E68FF18C9486F47 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F13BF5CB7A8B7C5FECAC3F6A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17B430AC95927535D0BB8E24 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1D0BFBD26B86F0123683628D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2313FF78466966DEC4D52330 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1AB272A94F0AE0AA97076B2F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C5D42570A1622333E8BD386 /* Sudokuly */;
+			targetProxy = CAFC6EF32C4D1E0757E3AEEC /* PBXContainerItemProxy */;
+		};
+		D21FE845851506732F013B7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C5D42570A1622333E8BD386 /* Sudokuly */;
+			targetProxy = 8183DC74BEEF4F3A38EE085B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		00F209874A1F7309F6DCEAA7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+			};
+			name = Release;
+		};
+		03AA65B677BC84CF814A5769 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CPM5925FS;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = gr.mountzou.SudokulyTests;
+				PRODUCT_NAME = SudokulyTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/sudokuly.app/sudokuly";
+			};
+			name = Release;
+		};
+		82B42C80450CBD1A0443376A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Sudokuly/Sudokuly.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5CPM5925FS;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sudokuly/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = gr.mountzou.sudokuly;
+				PRODUCT_MODULE_NAME = Sudokuly;
+				PRODUCT_NAME = sudokuly;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9F582D6CF32D5D877EC19600 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CPM5925FS;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = gr.mountzou.SudokulyUITests;
+				PRODUCT_NAME = SudokulyUITests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Sudokuly;
+			};
+			name = Release;
+		};
+		BD86E8D2D0436EB4C39B5C67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Sudokuly/Sudokuly.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5CPM5925FS;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sudokuly/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = gr.mountzou.sudokuly;
+				PRODUCT_MODULE_NAME = Sudokuly;
+				PRODUCT_NAME = sudokuly;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		CC908EB179CAF4C816EC688E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CPM5925FS;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = gr.mountzou.SudokulyUITests;
+				PRODUCT_NAME = SudokulyUITests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Sudokuly;
+			};
+			name = Debug;
+		};
+		D4BF25114D94E11F9B917B8D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CPM5925FS;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = gr.mountzou.SudokulyTests;
+				PRODUCT_NAME = SudokulyTests;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/sudokuly.app/sudokuly";
+			};
+			name = Debug;
+		};
+		ED8772ADEC3A6C25161BC957 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		22043BE2A83787A7A46EB14C /* Build configuration list for PBXNativeTarget "Sudokuly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82B42C80450CBD1A0443376A /* Debug */,
+				BD86E8D2D0436EB4C39B5C67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4A724E388F4A01AC1ADC527B /* Build configuration list for PBXNativeTarget "SudokulyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC908EB179CAF4C816EC688E /* Debug */,
+				9F582D6CF32D5D877EC19600 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		640DC9EFD529235A8D9E2727 /* Build configuration list for PBXProject "sudokuly" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED8772ADEC3A6C25161BC957 /* Debug */,
+				00F209874A1F7309F6DCEAA7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		758C7B49C7582E02F8B48C68 /* Build configuration list for PBXNativeTarget "SudokulyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4BF25114D94E11F9B917B8D /* Debug */,
+				03AA65B677BC84CF814A5769 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		00A5FE4FE829247B89B83C17 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+		2E284E49D15912C84D8883CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.19.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		108B67A3D9F8108837913B03 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E284E49D15912C84D8883CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		570C05C3FA5DF5E93C0FABA9 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00A5FE4FE829247B89B83C17 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		5C7C5B002B3C775B642AE91D /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E284E49D15912C84D8883CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		722276E5C058A4DB03A9B789 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00A5FE4FE829247B89B83C17 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		924978EAB2CD02BAA6065B5B /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E284E49D15912C84D8883CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		"TEMP_BF091244-CF61-48FF-9EA2-35BC75C5A10E" /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2E284E49D15912C84D8883CE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+}

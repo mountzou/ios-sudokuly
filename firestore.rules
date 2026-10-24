@@ -1,0 +1,52 @@
+// Assumed model: users/{uid}/games/{UUID}, one immutable completed-game summary.
+// Required fields only: schemaVersion (int 1), gameID (36-character UUID),
+// ownerID (1..128-character Firebase UID), finishedAt (timestamp >= 2000,
+// no more than 5 minutes ahead of server time), difficulty (allowed level),
+// outcome (allowed terminal state), duration (finite number within the level's
+// deadline), mistakes (int 0..3, consistent with outcome). No puzzle or solution.
+// The users/{uid} parent is a namespace, not a public or writable profile.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    function deadline(level) {
+      return level == 'easy' ? 900 : level == 'medium' ? 1200
+        : level == 'hard' ? 1800 : 2400;
+    }
+    function isValidGame(uid, gameId) {
+      let data = request.resource.data;
+      let fields = ['schemaVersion', 'gameID', 'ownerID', 'finishedAt',
+                    'difficulty', 'outcome', 'duration', 'mistakes'];
+      return data.keys().hasAll(fields) && data.keys().hasOnly(fields)
+        && data.schemaVersion is int && data.schemaVersion == 1
+        && data.gameID is string && data.gameID.size() == 36 && data.gameID == gameId
+        && data.gameID.matches('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+        && data.ownerID is string && data.ownerID.size() > 0 && data.ownerID.size() <= 128
+        && data.ownerID == uid && data.ownerID == request.auth.uid
+        && data.finishedAt is timestamp && data.finishedAt >= timestamp.date(2000, 1, 1)
+        && data.finishedAt <= request.time + duration.value(300, 's')
+        && data.difficulty is string && data.difficulty.size() <= 6
+        && data.difficulty in ['easy', 'medium', 'hard', 'expert']
+        && data.outcome is string && data.outcome.size() <= 8
+        && data.outcome in ['won', 'mistakes', 'timedOut']
+        && data.duration is number && data.duration >= 0 && data.duration <= deadline(data.difficulty)
+        && data.mistakes is int && data.mistakes >= 0 && data.mistakes <= 3
+        && (data.outcome == 'mistakes' ? data.mistakes == 3 : data.mistakes < 3)
+        && (data.outcome != 'timedOut' || data.duration == deadline(data.difficulty));
+    }
+    match /users/{uid}/games/{gameId} {
+      allow get: if isOwner(uid);
+      allow list: if isOwner(uid) && request.query.limit != null
+        && request.query.limit > 0 && request.query.limit <= 400;
+      allow create: if isOwner(uid) && isValidGame(uid, gameId);
+      // Retrying an identical completed result is allowed; changing it is not.
+      allow update: if isOwner(uid) && isValidGame(uid, gameId)
+        && request.resource.data == resource.data;
+      allow delete: if isOwner(uid);
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "fill": {
+    "solid": "srgb:0.95686,0.95686,0.94510,1.00000"
+  },
+  "groups": [
+    {
+      "layers": [
+        {
+          "name": "01 Dark Tiles",
+          "image-name": "01-dark-tiles.svg",
+          "glass": true,
+          "fill-specializations": [
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "srgb:0.95686,0.95686,0.94510,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 Light Tiles",
+          "image-name": "02-light-tiles.svg",
+          "glass": true,
+          "fill-specializations": [
+            {
+              "appearance": "dark",
+              "value": {
+                "solid": "srgb:0.52157,0.52157,0.52157,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.22
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.12
+      },
+      "name": "Sudokuly Grid",
+      "lighting": "individual",
+      "specular": true,
+      "blur-material": 0
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared"
+  },
+  "fill-specializations": [
+    {
+      "value": {
+        "solid": "srgb:0.95686,0.95686,0.94510,1.00000"
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "solid": "srgb:0.12549,0.12549,0.12549,1.00000"
+      }
+    },
+    {
+      "appearance": "tinted",
+      "value": "automatic"
+    }
+  ]
+}

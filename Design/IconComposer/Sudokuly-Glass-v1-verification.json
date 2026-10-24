@@ -1,0 +1,21 @@
+{
+  "artifact": "/Users/mountzou/ios-sudokuly/Design/IconComposer/Sudokuly-Glass-v1.icon",
+  "renderer": "Apple Icon Composer ictool 27.0 (129)",
+  "designGeneration": 27,
+  "platform": "iOS",
+  "verifiedRenditions": [
+    "Default",
+    "Dark"
+  ],
+  "sourceLayersUnchanged": true,
+  "bundledAppIconUnchanged": true,
+  "bundledAppIconSHA256": "f716bee0b5f7341e348c7751d11b8856a003a95b49cda663742dd6aa300bbad6",
+  "integrationStatus": "Preview only; not added to Xcode target",
+  "sha256": {
+    "Sudokuly-Glass-v1.icon/Assets/01-dark-tiles.svg": "318ea6029b7226200e6d832165b773583111d8c25af00deefe85d64f8f385bad",
+    "Sudokuly-Glass-v1.icon/Assets/02-light-tiles.svg": "da168851d68fd1a7b0d512d0ce892f4f560cbe403ffe49f2c0cd59922dd5e918",
+    "Sudokuly-Glass-v1.icon/icon.json": "3d2e6f974ccf4945701a33d5219368440156c524fd3dbaddf50bd46226d5dda0",
+    "Previews/Sudokuly-Glass-v1-dark.png": "f1f4ca69fee9798c32756c9e2d8670f499c570a30742a7479c40a167c925ea77",
+    "Previews/Sudokuly-Glass-v1-default.png": "2fffa299b0abc0d7875bc7005e4bd351f35d6660c88712dad878510edae63ef4"
+  }
+}
