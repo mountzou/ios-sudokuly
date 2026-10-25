@@ -1,6 +1,25 @@
 import Foundation
 
 enum DailyActivity {
+    static func dateBounds(registeredAt: Date?, today: Date, calendar: Calendar) -> ClosedRange<Date> {
+        let today = calendar.startOfDay(for: today)
+        // Without usable metadata, permit today until the real creation date is available.
+        guard let registeredAt, registeredAt.timeIntervalSinceReferenceDate.isFinite else { return today...today }
+        let firstDay = min(calendar.startOfDay(for: registeredAt), today)
+        return firstDay...today
+    }
+
+    static func activityInterval(around day: Date, bounds: ClosedRange<Date>, calendar: Calendar) -> DateInterval? {
+        guard let visibleWeek = interval(for: week(containing: day, calendar: calendar), calendar: calendar),
+              let start = calendar.date(byAdding: .day, value: -7, to: visibleWeek.start),
+              let end = calendar.date(byAdding: .day, value: 7, to: visibleWeek.end),
+              let tomorrow = calendar.date(byAdding: .day, value: 1, to: bounds.upperBound) else { return nil }
+        // Prefetch adjacent weeks only within this account's available calendar days.
+        let lower = max(start, bounds.lowerBound), upper = min(end, tomorrow)
+        guard lower < upper else { return nil }
+        return DateInterval(start: lower, end: upper)
+    }
+
     static func pickerStep(translation: Double, predicted: Double, spacing: Double) -> Int {
         guard spacing > 0, spacing.isFinite, translation.isFinite, predicted.isFinite else { return 0 }
         // A flick can finish a short drag, but an opposite velocity at lift-off must not reverse it.

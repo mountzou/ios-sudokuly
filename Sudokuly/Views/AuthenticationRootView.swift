@@ -10,7 +10,8 @@ struct AuthenticationRootView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Palette.paper.ignoresSafeArea())
             } else if let account = authentication.account {
-                RootView(ownerID: account.id, isDemo: isHistoryDemo, usesCloudHistory: !authentication.isTesting).id(account.id)
+                RootView(ownerID: account.id, registeredAt: account.registeredAt,
+                         isDemo: isHistoryDemo, usesCloudHistory: !authentication.isTesting).id(account.id)
             } else {
                 SignInView()
             }

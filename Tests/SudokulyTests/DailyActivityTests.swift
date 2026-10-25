@@ -31,6 +31,61 @@ final class DailyActivityTests: XCTestCase {
                    duration: outcome == .timedOut ? 900 : 42, mistakes: outcome == .mistakes ? 3 : 0)
     }
 
+    func testRegistrationBoundsIncludeTheWholeLocalSignupDay() {
+        let registeredAt = date("2026-10-24T22:30:00Z"), now = date("2026-10-26T12:00:00Z")
+        let athens = calendar(), utc = calendar("UTC")
+        let local = DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: athens)
+        let universal = DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: utc)
+        XCTAssertEqual(athens.component(.day, from: local.lowerBound), 25)
+        XCTAssertEqual(utc.component(.day, from: universal.lowerBound), 24)
+        XCTAssertEqual(local.lowerBound, athens.startOfDay(for: registeredAt))
+        XCTAssertEqual(local.upperBound, athens.startOfDay(for: now))
+        XCTAssertTrue(local.contains(local.lowerBound))
+        XCTAssertFalse(local.contains(athens.date(byAdding: .day, value: -1, to: local.lowerBound)!))
+    }
+
+    func testNewMissingAndFutureRegistrationDatesOnlyPermitToday() {
+        let cal = calendar(), now = date("2026-10-25T12:00:00Z")
+        let today = cal.startOfDay(for: now)
+        let metadata: [Date?] = [now, nil, date("2026-10-27T12:00:00Z"), Date(timeIntervalSince1970: .infinity)]
+        for registeredAt in metadata {
+            XCTAssertEqual(DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: cal), today...today)
+        }
+    }
+
+    func testActivityQueriesStopAtRegistrationAndTheEndOfToday() throws {
+        let cal = calendar(), now = date("2026-10-25T12:00:00Z")
+        let registeredAt = date("2026-10-24T12:00:00Z")
+        let bounds = DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: cal)
+        let interval = try XCTUnwrap(DailyActivity.activityInterval(around: now, bounds: bounds, calendar: cal))
+        XCTAssertEqual(interval.start, bounds.lowerBound)
+        XCTAssertEqual(interval.end, cal.date(byAdding: .day, value: 1, to: bounds.upperBound))
+    }
+
+    func testOlderActivitySelectionsRetainOnlyAvailablePrefetchDays() throws {
+        let cal = calendar("UTC"), now = date("2026-10-25T12:00:00Z")
+        let bounds = DailyActivity.dateBounds(registeredAt: date("2026-09-12T17:00:00Z"), today: now, calendar: cal)
+        let interval = try XCTUnwrap(DailyActivity.activityInterval(around: date("2026-09-15T12:00:00Z"),
+                                                                 bounds: bounds, calendar: cal))
+        XCTAssertEqual(interval.start, date("2026-09-12T00:00:00Z"))
+        XCTAssertEqual(interval.end, date("2026-09-28T00:00:00Z"))
+        XCTAssertNil(DailyActivity.activityInterval(around: date("2026-01-01T00:00:00Z"), bounds: bounds, calendar: cal),
+                     "A stale selection during metadata refresh must not create a reversed DateInterval")
+    }
+
+    func testRegistrationDayQueriesRespectDaylightSavingAndTimezoneChanges() throws {
+        let registeredAt = date("2026-10-24T22:30:00Z"), now = date("2026-10-25T12:00:00Z")
+        let athens = calendar(), losAngeles = calendar("America/Los_Angeles")
+        let bounds = DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: athens)
+        let interval = try XCTUnwrap(DailyActivity.activityInterval(around: now, bounds: bounds, calendar: athens))
+        XCTAssertEqual(interval.start, date("2026-10-24T21:00:00Z"))
+        XCTAssertEqual(interval.end, date("2026-10-25T22:00:00Z"))
+        XCTAssertEqual(interval.duration, 25 * 3600)
+        let shifted = DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: losAngeles)
+        XCTAssertEqual(losAngeles.component(.day, from: shifted.lowerBound), 24)
+        XCTAssertEqual(shifted.lowerBound, losAngeles.startOfDay(for: registeredAt))
+    }
+
     func testOnlyWinsBelongingToTheUserMarkADayAndMultipleWinsMakeOneCheck() {
         let cal = calendar(), day = date("2026-10-10T12:00:00Z")
         let next = cal.date(byAdding: .day, value: 1, to: day)!

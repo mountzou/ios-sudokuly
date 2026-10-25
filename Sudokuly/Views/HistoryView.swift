@@ -3,6 +3,7 @@ import SwiftUI
 struct HistoryView: View {
     @ObservedObject var history: GameHistoryStore
     let close: () -> Void
+    @State private var historyRowInsets = EdgeInsets()
 
     private var days: [Date] {
         Array(Set(history.records.map { Calendar.current.startOfDay(for: $0.finishedAt) })).sorted(by: >)
@@ -27,10 +28,17 @@ struct HistoryView: View {
     }
 
     private var historyHeader: some View {
-        HStack {
-            CircleIcon(symbol: "chevron.left", label: "Close history", action: close)
+        HStack(spacing: 12) {
+            CircleIcon(symbol: "chevron.left", label: "Close history",
+                       backgroundColor: Palette.controlBackground, action: close)
                 .accessibilityIdentifier("history-close")
-            Spacer()
+            Text("Your progress")
+                .font(AppFont.text(16, weight: .semibold))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("history-header")
+            Color.clear.frame(width: 46, height: 46).accessibilityHidden(true)
         }
         .padding(.top, 12)
     }
@@ -126,6 +134,7 @@ struct HistoryView: View {
                                 }
                             }
                         }
+                        .padding(historyRowInsets)
                     }
                     if history.hasMore {
                         if history.isLoadingMore { ProgressView().tint(Palette.ink).frame(maxWidth: .infinity) }
@@ -138,9 +147,6 @@ struct HistoryView: View {
                                 .accessibilityIdentifier("history-load-more")
                         }
                     }
-                    Text("One puzzle at a time.")
-                        .font(AppFont.text(11)).foregroundStyle(Palette.muted)
-                        .frame(maxWidth: .infinity)
                 }
             }
             .padding(.horizontal, 32).padding(.top, 24).padding(.bottom, 32)
@@ -162,24 +168,37 @@ struct HistoryView: View {
 
     private var summary: some View {
         HStack(spacing: 0) {
-            summaryStat("Played", value: "\(history.records.count)")
+            summaryStat("Played", value: "\(history.records.count)", edge: .leading)
                 .accessibilityLabel("\(history.records.count) \(history.records.count == 1 ? "game" : "games") played")
                 .accessibilityIdentifier("history-count")
             summaryStat("Solved", value: "\(history.records.filter { $0.outcome == .won }.count)")
-            summaryStat("Focus", value: "\(Int(history.records.reduce(0) { $0 + $1.duration } / 60))m")
+            summaryStat("Focus", value: "\(Int(history.records.reduce(0) { $0 + $1.duration } / 60))m", edge: .trailing)
         }
         .padding(.top, 4).padding(.bottom, 28)
         .overlay(alignment: .bottom) {
             Rectangle().fill(Palette.line).frame(height: 1)
         }
+        .backgroundPreferenceValue(HistorySummaryBoundsKey.self) { anchors in
+            GeometryReader { geometry in
+                let leading = anchors[.leading].map { geometry[$0].minX } ?? 0
+                let trailing = anchors[.trailing].map { geometry.size.width - geometry[$0].maxX } ?? 0
+                let insets = EdgeInsets(top: 0, leading: max(0, leading), bottom: 0, trailing: max(0, trailing))
+                Color.clear
+                    .onChange(of: insets, initial: true) { _, value in historyRowInsets = value }
+            }
+            .accessibilityHidden(true)
+        }
     }
 
-    private func summaryStat(_ label: String, value: String) -> some View {
+    private func summaryStat(_ label: String, value: String, edge: HorizontalEdge? = nil) -> some View {
         VStack(spacing: 8) {
             Text(value)
                 .font(AppFont.text(30, weight: .semibold)).tracking(-0.8).monospacedDigit()
                 .lineLimit(1).minimumScaleFactor(0.7)
             Text(label).font(AppFont.text(12)).foregroundStyle(Palette.muted)
+        }
+        .anchorPreference(key: HistorySummaryBoundsKey.self, value: .bounds) { anchor in
+            edge.map { [$0: anchor] } ?? [:]
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
@@ -194,6 +213,15 @@ struct HistoryView: View {
         if Calendar.current.isDateInToday(day) { return "Today" }
         if Calendar.current.isDateInYesterday(day) { return "Yesterday" }
         return day.formatted(AppFormatting.historyDay)
+    }
+}
+
+private struct HistorySummaryBoundsKey: PreferenceKey {
+    static var defaultValue: [HorizontalEdge: Anchor<CGRect>] { [:] }
+
+    static func reduce(value: inout [HorizontalEdge: Anchor<CGRect>],
+                       nextValue: () -> [HorizontalEdge: Anchor<CGRect>]) {
+        value.merge(nextValue(), uniquingKeysWith: { _, next in next })
     }
 }
 
@@ -227,10 +255,17 @@ struct HistoryDetailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                CircleIcon(symbol: "chevron.left", label: "Back to history") { dismiss() }
+            HStack(spacing: 12) {
+                CircleIcon(symbol: "chevron.left", label: "Back to history",
+                           backgroundColor: Palette.controlBackground) { dismiss() }
                     .accessibilityIdentifier("history-detail-back")
-                Spacer()
+                Text("Game details")
+                    .font(AppFont.text(16, weight: .semibold))
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityIdentifier("history-detail-header")
+                Color.clear.frame(width: 46, height: 46).accessibilityHidden(true)
             }
             .padding(.top, 12).padding(.horizontal, 24)
             .frame(maxWidth: 480).frame(maxWidth: .infinity)

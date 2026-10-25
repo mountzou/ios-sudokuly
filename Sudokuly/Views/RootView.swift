@@ -5,6 +5,7 @@ struct RootView: View {
 
     @StateObject private var history: GameHistoryStore
     @StateObject private var model: GameViewModel
+    private let registeredAt: Date?
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var navigationPath = NavigationPath()
@@ -15,7 +16,8 @@ struct RootView: View {
     @State private var pendingDemoAction: HistoryDemoAction?
     #endif
 
-    init(ownerID: String, isDemo: Bool = false, usesCloudHistory: Bool = false) {
+    init(ownerID: String, registeredAt: Date?, isDemo: Bool = false, usesCloudHistory: Bool = false) {
+        self.registeredAt = registeredAt
         var records: [GameRecord] = []
         #if DEBUG && targetEnvironment(simulator)
         self.isDemo = isDemo
@@ -79,7 +81,7 @@ struct RootView: View {
                         .transition(.opacity)
                 }
             } else {
-                HomeView(history: history, isGenerating: model.isGenerating, start: model.start,
+                HomeView(history: history, registeredAt: registeredAt, isGenerating: model.isGenerating, start: model.start,
                          showAccount: { navigationPath.append(Destination.account) },
                          showHistory: { navigationPath.append(Destination.history) },
                          showDemo: demoAction)
