@@ -28,6 +28,14 @@ final class HistoryUITests: XCTestCase {
         let value = app.descendants(matching: .any)["history-count"]
         XCTAssertTrue(value.waitForExistence(timeout: 5))
         XCTAssertEqual(value.label, "\(count) \(count == 1 ? "game" : "games") played")
+        assertProgressHeader()
+    }
+
+    private func assertProgressHeader() {
+        let header = app.staticTexts["history-header"]
+        XCTAssertEqual(header.label, "Your progress")
+        XCTAssertEqual(header.frame.midX, app.frame.midX, accuracy: 1.5)
+        XCTAssertFalse(app.staticTexts["One puzzle at a time."].exists)
     }
 
     private func chooseDemo(_ id: String) {
@@ -49,9 +57,15 @@ final class HistoryUITests: XCTestCase {
             let id = String(format: "history-game-00000000-0000-0000-0000-%012d", index)
             let row = app.buttons[id]
             if !row.isHittable { app.swipeUp() }
+            let outerMargin = (app.frame.width - min(app.frame.width, 480)) / 2 + 32
+            XCTAssertGreaterThan(row.frame.minX, outerMargin + 4)
+            XCTAssertLessThan(row.frame.maxX, app.frame.width - outerMargin - 4)
             XCTAssertNil(row.label.range(of: "[\\p{Greek}]", options: .regularExpression), row.label)
             row.tap()
             XCTAssertTrue(app.staticTexts["history-detail-title"].waitForExistence(timeout: 3))
+            let header = app.staticTexts["history-detail-header"]
+            XCTAssertEqual(header.label, "Game details")
+            XCTAssertEqual(header.frame.midX, app.frame.midX, accuracy: 1.5)
             XCTAssertEqual(app.staticTexts["history-detail-title"].label, title)
             let date = app.staticTexts["history-detail-date"].label
             let time = app.staticTexts["history-detail-time"].label
@@ -72,6 +86,7 @@ final class HistoryUITests: XCTestCase {
         capture("home-progress-icon")
         app.buttons["history"].tap()
         XCTAssertTrue(app.staticTexts["history-empty"].waitForExistence(timeout: 3))
+        assertProgressHeader()
         XCTAssertFalse(app.buttons["history-play"].exists)
         capture("history-empty")
         app.buttons["history-close"].tap()
@@ -84,6 +99,7 @@ final class HistoryUITests: XCTestCase {
         if !app.buttons["result-history"].isHittable { app.swipeUp() }
         app.buttons["result-history"].tap()
         assertCount(1)
+        capture("history-one-game-progress")
         app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'history-game-'")).firstMatch.tap()
         XCTAssertTrue(app.staticTexts["history-detail-title"].waitForExistence(timeout: 3))
         app.buttons["history-detail-back"].tap()

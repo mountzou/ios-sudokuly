@@ -5,11 +5,17 @@ import UIKit
 
 final class AppIntegrationTests: XCTestCase {
     @MainActor
-    func testAllBundledClarityCityWeightsAreRegistered() {
-        for face in ["Regular", "Medium", "SemiBold", "Bold"] {
-            let font = UIFont(name: "ClarityCity-\(face)", size: 20)
-            XCTAssertNotNil(font, "Missing bundled Clarity City \(face)")
-            XCTAssertTrue(font?.fontName.hasPrefix("ClarityCity") == true)
+    func testBundledBricolageWeightsAreRegisteredAndUsedWithoutFallback() throws {
+        XCTAssertNotNil(Bundle.main.url(forResource: "BricolageGrotesque-Variable", withExtension: "ttf"))
+        let weights: [(String, UIFont.Weight)] = [
+            ("Regular", .regular), ("Medium", .medium),
+            ("SemiBold", .semibold), ("Bold", .bold)
+        ]
+        for (face, weight) in weights {
+            let name = "BricolageGrotesque-96ptExtraBold_\(face)"
+            let font = try XCTUnwrap(UIFont(name: name, size: 20), "Missing bundled Bricolage \(face)")
+            XCTAssertEqual(font.fontName, name)
+            XCTAssertEqual(AppFont.uiFont(20, weight: weight).fontName, name)
         }
     }
 

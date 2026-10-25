@@ -102,4 +102,41 @@ final class ActivityDatePickerTests: XCTestCase {
         XCTAssertEqual(DailyActivity.pickerStep(translation: 40, predicted: -70, spacing: 50), -1)
         XCTAssertEqual(DailyActivity.pickerStep(translation: 3, predicted: 70, spacing: 50), 0)
     }
+
+    func testRegistrationDayBlocksBackwardDraggingAndDirectSelectionButAllowsForwardMovement() {
+        let bounds = DailyActivity.dateBounds(registeredAt: day(9).addingTimeInterval(12 * 3600),
+                                             today: day(11), calendar: calendar)
+        var picker = ActivityDatePicker(day: day(10))
+        picker.drag(x: 400, y: 0, spacing: 50, calendar: calendar, bounds: bounds)
+        picker.endDrag(x: 400, predicted: 900, spacing: 50, calendar: calendar, bounds: bounds)
+        picker.settle()
+        XCTAssertEqual(picker.day, day(9))
+        for _ in 0..<3 {
+            picker.drag(x: 400, y: 8, spacing: 50, calendar: calendar, bounds: bounds)
+            XCTAssertEqual(picker.offset, 0, "No visual overscroll before the registration day")
+            picker.endDrag(x: 400, predicted: 900, spacing: 50, calendar: calendar, bounds: bounds)
+            picker.settle()
+            XCTAssertEqual(picker.day, day(9))
+        }
+        picker.center(day(8), bounds: bounds)
+        XCTAssertEqual(picker.day, day(9), "Taps and accessibility actions share the same lower bound")
+        picker.drag(x: -400, y: 0, spacing: 50, calendar: calendar, bounds: bounds)
+        picker.endDrag(x: -400, predicted: -900, spacing: 50, calendar: calendar, bounds: bounds)
+        picker.settle()
+        XCTAssertEqual(picker.day, day(10))
+    }
+
+    func testNewAccountCannotDragInEitherDirectionOrSelectAnOlderDate() {
+        let bounds = DailyActivity.dateBounds(registeredAt: day(11), today: day(11), calendar: calendar)
+        var picker = ActivityDatePicker(day: day(11))
+        for translation in [400.0, -400.0] {
+            picker.drag(x: translation, y: 0, spacing: 50, calendar: calendar, bounds: bounds)
+            XCTAssertEqual(picker.offset, 0)
+            picker.endDrag(x: translation, predicted: translation * 3, spacing: 50, calendar: calendar, bounds: bounds)
+            picker.settle()
+            XCTAssertEqual(picker.day, day(11))
+        }
+        picker.center(day(10), bounds: bounds)
+        XCTAssertEqual(picker.day, day(11))
+    }
 }

@@ -2,16 +2,68 @@ import XCTest
 
 @MainActor
 final class ActivityDateStripUITests: XCTestCase {
-    private func launch() -> XCUIApplication {
+    private func launch(registrationDaysAgo: Int? = nil) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--game-testing", "--ui-testing"]
+        if let registrationDaysAgo { app.launchArguments.append("--registration-days-ago=\(registrationDaysAgo)") }
         app.launch()
         XCTAssertTrue(app.buttons["activity-today"].waitForExistence(timeout: 5), app.debugDescription)
         return app
     }
     private func capture(_ app: XCUIApplication, _ name: String) {
         let image = XCTAttachment(screenshot: app.screenshot()); image.name = name; image.lifetime = .keepAlways; add(image)
+    }
+
+    private func dateButton(_ app: XCUIApplication, daysFromToday: Int) -> XCUIElement {
+        let day = Calendar.current.date(byAdding: .day, value: daysFromToday, to: Date())!
+        let suffix = day.formatted(.dateTime.year().month(.twoDigits).day(.twoDigits).locale(Locale(identifier: "en_US")))
+        return app.buttons["activity-day-\(suffix)"]
+    }
+
+    func testRegistrationDayIsTheFirstEnabledDateAndStopsBackwardSwiping() {
+        let app = launch(registrationDaysAgo: 2), strip = app.otherElements["activity-picker"]
+        strip.swipeRight()
+        strip.swipeRight()
+        let registration = assertCenteredSelection(app)
+        let registrationID = registration.identifier
+        XCTAssertEqual(registrationID, dateButton(app, daysFromToday: -2).identifier)
+        XCTAssertTrue(registration.isEnabled)
+        let older = dateButton(app, daysFromToday: -3)
+        XCTAssertTrue(older.exists, "Earlier dates stay visible")
+        XCTAssertFalse(older.isEnabled)
+        for _ in 0..<3 {
+            strip.swipeRight(velocity: .fast)
+            XCTAssertEqual(assertCenteredSelection(app).identifier, registrationID)
+        }
+        let center = registration.frame
+        strip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .withOffset(CGVector(dx: -(center.width + 4), dy: 0)).tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, registrationID,
+                       "Tapping an earlier disabled date cannot select it")
+        capture(app, "registration-lower-bound")
+        strip.swipeLeft()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, dateButton(app, daysFromToday: -1).identifier)
+        app.buttons["activity-reset-today"].tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+    }
+
+    func testNewAccountKeepsEarlierDatesVisibleButOnlyTodayEnabled() {
+        let app = launch(registrationDaysAgo: 0), strip = app.otherElements["activity-picker"]
+        XCTAssertTrue(dateButton(app, daysFromToday: -1).exists)
+        XCTAssertFalse(dateButton(app, daysFromToday: -1).isEnabled)
+        XCTAssertFalse(dateButton(app, daysFromToday: 1).isEnabled)
+        for _ in 0..<2 {
+            strip.swipeRight(velocity: .fast)
+            XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+            strip.swipeLeft(velocity: .fast)
+            XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+        }
+        let center = assertCenteredSelection(app).frame
+        strip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .withOffset(CGVector(dx: -(center.width + 4), dy: 0)).tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+        capture(app, "registration-today-only")
     }
 
     private func assertCenteredSelection(_ app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) -> XCUIElement {
@@ -111,7 +163,9 @@ final class ActivityDateStripUITests: XCTestCase {
         let todayLabel = assertCenteredSelection(app).label
         let originalY = strip.frame.minY
         let viewport = app.scrollViews.firstMatch.frame
-        let contentBottom = app.staticTexts["Just you and the puzzle."].frame.maxY + 12
+        let finalDifficulty = app.buttons["difficulty-expert"]
+        XCTAssertTrue(finalDifficulty.exists)
+        let contentBottom = finalDifficulty.frame.maxY + 12
         let start = strip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8))
         start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 4, dy: -100)),
                     withVelocity: .slow, thenHoldForDuration: 0)

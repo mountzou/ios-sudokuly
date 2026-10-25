@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @ObservedObject var history: GameHistoryStore
+    let registeredAt: Date?
     let isGenerating: Bool
     let start: (Difficulty) -> Void
     let showAccount: () -> Void
@@ -15,19 +16,27 @@ struct HomeView: View {
                     BrandMark()
                     Spacer()
                     Button(action: showHistory) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.system(size: 20, weight: .regular))
+                        Image("FlowStatistics")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 26, height: 26)
                             .foregroundStyle(Palette.ink)
                             .frame(width: 44, height: 44)
+                            .accessibilityHidden(true)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Game history")
                     .accessibilityIdentifier("history")
                     Button(action: showAccount) {
-                        Image(systemName: "person.crop.circle")
-                            .font(.system(size: 25, weight: .light))
+                        Image("FlowAccount")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 26, height: 26)
                             .foregroundStyle(Palette.ink)
                             .frame(width: 44, height: 44)
+                            .accessibilityHidden(true)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Your account")
@@ -47,19 +56,14 @@ struct HomeView: View {
                         .foregroundStyle(Palette.muted)
                 }
 
-                ActivityDateStrip(history: history)
+                ActivityDateStrip(history: history, registeredAt: registeredAt)
 
                 VStack(alignment: .leading, spacing: 14) {
-                    HStack {
-                        Text("PICK YOUR PACE")
-                            .font(AppFont.text(10, weight: .semibold))
-                            .tracking(1.8)
-                        Spacer()
-                        Text("4 levels. Endless possibilities.")
-                            .font(AppFont.text(10))
-                    }
-                    .foregroundStyle(Palette.muted)
-                    .padding(.horizontal, 3)
+                    Text("SELECT A DIFFICULTY LEVEL")
+                        .font(AppFont.text(10, weight: .semibold))
+                        .tracking(1.8)
+                        .foregroundStyle(Palette.muted)
+                        .padding(.horizontal, 3)
 
                     VStack(spacing: 0) {
                         ForEach(Difficulty.allCases) { difficulty in
@@ -72,27 +76,21 @@ struct HomeView: View {
                     .background(.white, in: RoundedRectangle(cornerRadius: 26))
                 }
 
-                Group {
-                    #if DEBUG && targetEnvironment(simulator)
-                    if let showDemo {
-                        Button(action: showDemo) {
-                            Label("Test player · Demo scenarios", systemImage: "slider.horizontal.3")
-                                .font(AppFont.text(11, weight: .medium)).frame(minHeight: 44)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("demo-scenarios")
-                    } else {
-                        footer
+                #if DEBUG && targetEnvironment(simulator)
+                if let showDemo {
+                    Button(action: showDemo) {
+                        Label("Test player · Demo scenarios", systemImage: "slider.horizontal.3")
+                            .font(AppFont.text(11, weight: .medium)).frame(minHeight: 44)
                     }
-                    #else
-                    footer
-                    #endif
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("demo-scenarios")
+                    .foregroundStyle(Palette.muted)
+                    .frame(maxWidth: .infinity)
                 }
-                .foregroundStyle(Palette.muted)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 12)
+                #endif
             }
             .padding(.horizontal, 24)
+            .padding(.bottom, 12)
             .frame(maxWidth: 480)
             .frame(maxWidth: .infinity)
         }
@@ -114,24 +112,15 @@ struct HomeView: View {
         .accessibilityIdentifier("home-screen")
     }
 
-    private var footer: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "heart").font(.system(size: 10))
-            Text("Just you and the puzzle.").font(AppFont.text(11))
-        }
-    }
-
     private func difficultyButton(_ difficulty: Difficulty) -> some View {
         Button { start(difficulty) } label: {
             HStack(spacing: 15) {
-                HStack(alignment: .bottom, spacing: 3) {
-                    ForEach(1...4, id: \.self) { index in
-                        Capsule()
-                            .fill(index <= difficulty.rank ? Palette.ink : Palette.ink.opacity(0.12))
-                            .frame(width: 4, height: CGFloat(7 + index * 4))
-                    }
-                }
-                .frame(width: 30, height: 30)
+                Image("FlowDifficulty\(difficulty.rank)")
+                    .renderingMode(.original)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(difficulty.title).font(AppFont.text(17, weight: .semibold))
                     Text(difficulty.detail).font(AppFont.text(11)).foregroundStyle(Palette.muted)
@@ -154,6 +143,7 @@ struct HomeView: View {
 
 private struct ActivityDateStrip: View {
     @ObservedObject var history: GameHistoryStore
+    let registeredAt: Date?
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var today = Calendar.autoupdatingCurrent.startOfDay(for: Date())
@@ -170,8 +160,9 @@ private struct ActivityDateStrip: View {
     private var days: [Date] {
         (-4...4).compactMap { calendar.date(byAdding: .day, value: $0, to: picker.day) }
     }
-    private var earliestDay: Date { calendar.startOfDay(for: Date(timeIntervalSince1970: 946684800)) }
-    private var bounds: ClosedRange<Date> { earliestDay...today }
+    private var bounds: ClosedRange<Date> {
+        DailyActivity.dateBounds(registeredAt: registeredAt, today: today, calendar: calendar)
+    }
     private struct LoadKey: Equatable {
         let day: Date
         let interval: DateInterval?
@@ -185,13 +176,7 @@ private struct ActivityDateStrip: View {
     }
 
     private var interval: DateInterval? {
-        let week = DailyActivity.week(containing: picker.day, calendar: calendar)
-        guard let visibleWeek = DailyActivity.interval(for: week, calendar: calendar),
-              let start = calendar.date(byAdding: .day, value: -7, to: visibleWeek.start),
-              let end = calendar.date(byAdding: .day, value: 7, to: visibleWeek.end),
-              let tomorrow = calendar.date(byAdding: .day, value: 1, to: today) else { return nil }
-        // Include adjacent weeks so every partially visible date has its activity loaded.
-        return DateInterval(start: max(start, earliestDay), end: min(end, tomorrow))
+        DailyActivity.activityInterval(around: picker.day, bounds: bounds, calendar: calendar)
     }
 
     var body: some View {
@@ -272,6 +257,7 @@ private struct ActivityDateStrip: View {
             else { withoutAnimation { picker.cancelDrag() }; history.cancelActivityLoad() }
         }
         .onDisappear { history.cancelActivityLoad() }
+        .onChange(of: registeredAt) { _, _ in refreshDate() }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in refreshDate() }
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in refreshDate() }
     }
@@ -366,7 +352,7 @@ private struct ActivityDateStrip: View {
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { picker.settle() }
     }
 
-    private func canCenter(_ day: Date) -> Bool { day >= earliestDay && day <= today }
+    private func canCenter(_ day: Date) -> Bool { bounds.contains(day) }
 
     private func refreshDate() {
         let followedToday = calendar.isDate(picker.day, inSameDayAs: today)
@@ -374,7 +360,7 @@ private struct ActivityDateStrip: View {
         today = calendar.startOfDay(for: Date())
         if followedToday { center(today) }
         else {
-            center(min(today, calendar.startOfDay(for: picker.day)))
+            center(max(bounds.lowerBound, min(today, calendar.startOfDay(for: picker.day))))
         }
         refreshRevision += 1
     }

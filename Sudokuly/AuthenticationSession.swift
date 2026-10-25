@@ -12,6 +12,7 @@ struct SignedInAccount: Equatable, Sendable {
     let name: String?
     let email: String?
     let providerIDs: [String]
+    let registeredAt: Date?
 
     var providerLabel: String {
         providerIDs.compactMap { provider in
@@ -79,7 +80,8 @@ final class AuthenticationSession {
     nonisolated private static func snapshot(_ user: User?) -> SignedInAccount? {
         guard let user, allowsAccount(isAnonymous: user.isAnonymous, providerIDs: user.providerData.map(\.providerID)) else { return nil }
         return SignedInAccount(id: user.uid, name: user.displayName, email: user.email,
-                               providerIDs: user.providerData.map(\.providerID))
+                               providerIDs: user.providerData.map(\.providerID),
+                               registeredAt: user.metadata.creationDate)
     }
 
     func signInWithGoogle() async {
@@ -277,7 +279,11 @@ final class AuthenticationSession {
 
     #if DEBUG && targetEnvironment(simulator)
     private static func testAccount(provider: String) -> SignedInAccount {
-        SignedInAccount(id: "sudokuly-ui-test", name: "Sudokuly Player", email: "player@example.test", providerIDs: [provider])
+        let argument = ProcessInfo.processInfo.arguments.first { $0.hasPrefix("--registration-days-ago=") }
+        let daysAgo = argument.flatMap { Int($0.dropFirst("--registration-days-ago=".count)) } ?? 365
+        let registeredAt = Calendar.autoupdatingCurrent.date(byAdding: .day, value: -min(36_500, max(0, daysAgo)), to: Date())
+        return SignedInAccount(id: "sudokuly-ui-test", name: "Sudokuly Player", email: "player@example.test",
+                               providerIDs: [provider], registeredAt: registeredAt)
     }
     private func simulateSignIn(provider: String) async {
         await Task.yield()

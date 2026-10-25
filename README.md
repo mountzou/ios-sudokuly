@@ -31,6 +31,8 @@ Dependencies are pinned in `sudokuly.xcodeproj/project.xcworkspace/xcshareddata/
 
 Choose Easy, Medium, Hard, or Expert on the home screen. Each selection generates a new puzzle locally on a background task, with randomized backtracking and a solver that rejects clue removals introducing a second solution.
 
+The home activity strip permits selection from the account's Firebase Authentication creation day through today, using the device's local calendar and timezone. Earlier and future dates remain visible but dimmed and disabled. Swipes, taps and accessibility actions respect the same bounds, and activity queries exclude days before registration. The lower bound follows the signed-in account and refreshes with metadata, day and timezone changes. If creation metadata is unavailable or ahead of the device clock, only today is selectable until a usable creation date is available.
+
 | Level | Target givens | Time limit |
 | --- | ---: | ---: |
 | Easy | 46 | 15 minutes |

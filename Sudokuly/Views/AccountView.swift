@@ -9,7 +9,8 @@ struct AccountView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                CircleIcon(symbol: "chevron.left", label: "Back to home") { dismiss() }
+                CircleIcon(symbol: "chevron.left", label: "Back to home",
+                           backgroundColor: Palette.controlBackground) { dismiss() }
                     .accessibilityIdentifier("account-back")
                 Text("Account")
                     .font(AppFont.text(16, weight: .semibold))

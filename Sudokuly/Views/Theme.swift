@@ -6,6 +6,7 @@ enum Palette {
     static let paper = Color(red: 0.955, green: 0.955, blue: 0.945)
     static let line = Color.black.opacity(0.075)
     static let error = Color(red: 0.69, green: 0.24, blue: 0.22)
+    static let controlBackground = ink.opacity(0.05)
 }
 
 enum AppFont {
@@ -37,37 +38,25 @@ enum AppFont {
 struct BrandMark: View {
     var small = false
     var body: some View {
-        HStack(spacing: 9) {
-            Grid(horizontalSpacing: 2, verticalSpacing: 2) {
-                ForEach(0..<3) { row in
-                    GridRow {
-                        ForEach(0..<3) { column in
-                            RoundedRectangle(cornerRadius: 1.1)
-                                .fill(Palette.ink.opacity(row == 0 && column == 2 || row == 2 && column == 0 ? 0.2 : 1))
-                                .frame(width: small ? 4 : 5, height: small ? 4 : 5)
-                        }
-                    }
-                }
-            }
-            Text("sudokuly")
-                .font(AppFont.text(small ? 21 : 26, weight: .bold))
-                .tracking(-1)
-        }
-        .foregroundStyle(Palette.ink)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("sudokuly")
+        Text("sudokuly")
+            .font(AppFont.text(small ? 21 : 26, weight: .bold))
+            .tracking(-1)
+            .foregroundStyle(Palette.ink)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("sudokuly")
     }
 }
 
 struct CircleIcon: View {
     let symbol: String
     let label: String
+    var backgroundColor: Color = Palette.paper
     let action: () -> Void
     var body: some View {
         Button(action: action) {
             AppSymbol(symbol: symbol, size: 18, weight: .semibold)
                 .frame(width: 46, height: 46)
-                .background(Palette.paper, in: Circle())
+                .background(backgroundColor, in: Circle())
                 .foregroundStyle(Palette.ink)
         }
         .buttonStyle(.plain)
