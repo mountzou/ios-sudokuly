@@ -47,20 +47,6 @@ struct AccountView: View {
                             .font(AppFont.text(13, weight: .medium)).foregroundStyle(Palette.error)
                             .frame(minHeight: 44)
                             .accessibilityIdentifier("delete-account")
-                        Link(destination: AppLinks.privacyPolicy) {
-                            HStack(spacing: 6) {
-                                Text("Privacy Policy")
-                                    .font(AppFont.text(13, weight: .medium))
-                                Image(systemName: "arrow.up.right")
-                                    .font(.system(size: 11, weight: .medium))
-                                    .accessibilityHidden(true)
-                            }
-                            .foregroundStyle(Palette.muted)
-                            .frame(minHeight: 44)
-                            .contentShape(Rectangle())
-                        }
-                        .accessibilityIdentifier("account-privacy-policy")
-                        .accessibilityHint("Opens in your browser")
                         if authentication.isBusy { ProgressView().tint(Palette.ink) }
                         if let error = authentication.errorMessage {
                             Text(error).font(AppFont.text(12)).foregroundStyle(Palette.error).multilineTextAlignment(.center)
@@ -71,6 +57,23 @@ struct AccountView: View {
                     .frame(maxWidth: .infinity, minHeight: geometry.size.height)
                 }
             }
+
+            Link(destination: AppLinks.privacyPolicy) {
+                HStack(spacing: 6) {
+                    Text("Privacy Policy")
+                        .font(AppFont.text(13, weight: .medium))
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 11, weight: .medium))
+                        .accessibilityHidden(true)
+                }
+                .foregroundStyle(Palette.muted)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+            }
+            .padding(.horizontal, 28)
+            .padding(.bottom, 12)
+            .accessibilityIdentifier("account-privacy-policy")
+            .accessibilityHint("Opens in your browser")
         }
         .disabled(authentication.isBusy)
         .background(Palette.paper.ignoresSafeArea())

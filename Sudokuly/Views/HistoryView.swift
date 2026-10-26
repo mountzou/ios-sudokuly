@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HistoryView: View {
     @ObservedObject var history: GameHistoryStore
+    let registeredAt: Date?
     let close: () -> Void
     @State private var historyRowInsets = EdgeInsets()
 
@@ -50,10 +51,13 @@ struct HistoryView: View {
                 .frame(maxWidth: 480).frame(maxWidth: .infinity)
             GeometryReader { geometry in
                 ScrollView {
-                    emptyState
-                        .padding(.vertical, 40)
-                        .modifier(IllustratedContentWidth())
-                        .frame(maxWidth: .infinity, minHeight: geometry.size.height)
+                    VStack(spacing: 32) {
+                        emptyState
+                        YearlyActivityView(history: history, registeredAt: registeredAt)
+                    }
+                    .padding(.vertical, 40)
+                    .modifier(IllustratedContentWidth())
+                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
                 }
                 .scrollIndicators(.hidden)
             }
@@ -114,6 +118,7 @@ struct HistoryView: View {
                             .font(AppFont.text(11)).foregroundStyle(Palette.muted)
                             .multilineTextAlignment(.center)
                     }
+                    YearlyActivityView(history: history, registeredAt: registeredAt)
                     ForEach(days, id: \.self) { day in
                         VStack(spacing: 12) {
                             Text(dayLabel(day))
@@ -180,11 +185,17 @@ struct HistoryView: View {
         }
         .backgroundPreferenceValue(HistorySummaryBoundsKey.self) { anchors in
             GeometryReader { geometry in
-                let leading = anchors[.leading].map { geometry[$0].minX } ?? 0
-                let trailing = anchors[.trailing].map { geometry.size.width - geometry[$0].maxX } ?? 0
-                let insets = EdgeInsets(top: 0, leading: max(0, leading), bottom: 0, trailing: max(0, trailing))
-                Color.clear
-                    .onChange(of: insets, initial: true) { _, value in historyRowInsets = value }
+                if let leadingAnchor = anchors[.leading], let trailingAnchor = anchors[.trailing] {
+                    // Navigation transitions can temporarily remove anchors or shift them by a fraction of a point.
+                    // Keep the last stable alignment instead of feeding those changes back into the layout.
+                    let leading = max(0, geometry[leadingAnchor].minX).rounded()
+                    let trailing = max(0, geometry.size.width - geometry[trailingAnchor].maxX).rounded()
+                    let insets = EdgeInsets(top: 0, leading: leading, bottom: 0, trailing: trailing)
+                    Color.clear
+                        .onChange(of: insets, initial: true) { _, value in
+                            if historyRowInsets != value { historyRowInsets = value }
+                        }
+                }
             }
             .accessibilityHidden(true)
         }

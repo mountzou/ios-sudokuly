@@ -53,6 +53,50 @@ final class DailyActivityTests: XCTestCase {
         }
     }
 
+    func testAvailableMonthsSpanRegistrationThroughTodayAcrossYears() {
+        let cal = calendar("UTC")
+        let bounds = DailyActivity.dateBounds(registeredAt: date("2025-12-31T18:00:00Z"),
+                                             today: date("2026-02-10T12:00:00Z"), calendar: cal)
+        XCTAssertEqual(DailyActivity.months(in: bounds, calendar: cal),
+                       [date("2025-12-01T00:00:00Z"), date("2026-01-01T00:00:00Z"), date("2026-02-01T00:00:00Z")])
+    }
+
+    func testSameMonthAndUnusableRegistrationOfferOnlyTheCurrentMonth() {
+        let cal = calendar(), now = date("2026-10-25T12:00:00Z")
+        let registrations: [Date?] = [now, date("2026-10-01T12:00:00Z"), nil, date("2026-11-01T12:00:00Z")]
+        for registeredAt in registrations {
+            let bounds = DailyActivity.dateBounds(registeredAt: registeredAt, today: now, calendar: cal)
+            XCTAssertEqual(DailyActivity.months(in: bounds, calendar: cal),
+                           [cal.dateInterval(of: .month, for: now)!.start])
+        }
+    }
+
+    func testMonthBoundsClipRegistrationAndTodayAndRejectUnavailableMonths() {
+        let cal = calendar("UTC")
+        let bounds = DailyActivity.dateBounds(registeredAt: date("2026-09-12T17:00:00Z"),
+                                             today: date("2026-10-25T12:00:00Z"), calendar: cal)
+        XCTAssertEqual(DailyActivity.monthBounds(containing: bounds.lowerBound, within: bounds, calendar: cal),
+                       date("2026-09-12T00:00:00Z")...date("2026-09-30T00:00:00Z"))
+        XCTAssertEqual(DailyActivity.monthBounds(containing: bounds.upperBound, within: bounds, calendar: cal),
+                       date("2026-10-01T00:00:00Z")...date("2026-10-25T00:00:00Z"))
+        for unavailable in ["2026-08-31T12:00:00Z", "2026-11-01T12:00:00Z"] {
+            XCTAssertNil(DailyActivity.monthBounds(containing: date(unavailable), within: bounds, calendar: cal))
+        }
+    }
+
+    func testMonthBoundsRespectLeapDaysAndLocalDaylightSaving() throws {
+        let cal = calendar()
+        let bounds = DailyActivity.dateBounds(registeredAt: date("2024-01-01T12:00:00Z"),
+                                             today: date("2026-11-02T12:00:00Z"), calendar: cal)
+        for (instant, count) in [("2024-02-15T12:00:00Z", 29), ("2026-03-15T12:00:00Z", 31),
+                                 ("2026-10-15T12:00:00Z", 31)] {
+            let month = try XCTUnwrap(DailyActivity.monthBounds(containing: date(instant), within: bounds, calendar: cal))
+            XCTAssertEqual(cal.component(.day, from: month.lowerBound), 1)
+            XCTAssertEqual(cal.component(.day, from: month.upperBound), count)
+            XCTAssertEqual(cal.dateComponents([.day], from: month.lowerBound, to: month.upperBound).day, count - 1)
+        }
+    }
+
     func testActivityQueriesStopAtRegistrationAndTheEndOfToday() throws {
         let cal = calendar(), now = date("2026-10-25T12:00:00Z")
         let registeredAt = date("2026-10-24T12:00:00Z")

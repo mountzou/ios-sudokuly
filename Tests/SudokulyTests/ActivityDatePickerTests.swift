@@ -139,4 +139,22 @@ final class ActivityDatePickerTests: XCTestCase {
         picker.center(day(10), bounds: bounds)
         XCTAssertEqual(picker.day, day(11))
     }
+
+    func testHistoricalMonthStopsSwipesAndTapsAtBothMonthEdges() throws {
+        let accountBounds = calendar.date(byAdding: .month, value: -2, to: day(1))!...day(11)
+        let september = calendar.date(byAdding: .month, value: -1, to: day(1))!
+        let monthBounds = try XCTUnwrap(DailyActivity.monthBounds(containing: september, within: accountBounds, calendar: calendar))
+        var picker = ActivityDatePicker(day: monthBounds.lowerBound)
+        for edge in [monthBounds.lowerBound, monthBounds.upperBound] {
+            picker.center(edge, bounds: monthBounds)
+            let translation = edge == monthBounds.lowerBound ? 400.0 : -400.0
+            picker.drag(x: translation, y: 0, spacing: 50, calendar: calendar, bounds: monthBounds)
+            XCTAssertEqual(picker.offset, 0)
+            picker.endDrag(x: translation, predicted: translation * 3, spacing: 50, calendar: calendar, bounds: monthBounds)
+            picker.settle()
+            let outside = calendar.date(byAdding: .day, value: translation > 0 ? -1 : 1, to: edge)!
+            picker.center(outside, bounds: monthBounds)
+            XCTAssertEqual(picker.day, edge)
+        }
+    }
 }
