@@ -39,7 +39,7 @@ struct RootView: View {
                     case .account:
                         AccountView()
                     case .history:
-                        HistoryView(history: history, close: { navigationPath.removeLast() })
+                        HistoryView(history: history, registeredAt: registeredAt, close: { navigationPath.removeLast() })
                     }
                 }
                 .navigationDestination(for: GameRecord.self) { record in HistoryDetailView(record: record) }

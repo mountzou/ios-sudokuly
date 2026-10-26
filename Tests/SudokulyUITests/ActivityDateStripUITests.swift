@@ -21,17 +21,136 @@ final class ActivityDateStripUITests: XCTestCase {
         return app.buttons["activity-day-\(suffix)"]
     }
 
+    private func monthButton(_ app: XCUIApplication, for date: Date) -> XCUIElement {
+        let identifier = String(format: "activity-month-%04d-%02d", Calendar.current.component(.year, from: date),
+                                Calendar.current.component(.month, from: date))
+        return app.buttons[identifier]
+    }
+
+    func testMonthSheetOffersOnlyAccountMonthsAndSelectingOneKeepsTheStripWithinIt() {
+        let app = launch(registrationDaysAgo: 40)
+        app.buttons["activity-month-picker"].tap()
+        XCTAssertTrue(app.staticTexts["Choose month"].waitForExistence(timeout: 3))
+        let cal = Calendar.current
+        let registeredAt = cal.date(byAdding: .day, value: -40, to: Date())!
+        let registrationMonth = cal.dateInterval(of: .month, for: registeredAt)!.start
+        let priorMonth = cal.date(byAdding: .month, value: -1, to: registrationMonth)!
+        let futureMonth = cal.date(byAdding: .month, value: 1, to: Date())!
+        XCTAssertFalse(monthButton(app, for: priorMonth).exists)
+        XCTAssertFalse(monthButton(app, for: futureMonth).exists)
+        XCTAssertTrue(monthButton(app, for: Date()).isSelected)
+        capture(app, "month-sheet-available-months")
+        monthButton(app, for: registrationMonth).tap()
+        XCTAssertFalse(app.staticTexts["Choose month"].exists)
+        let expected = cal.startOfDay(for: registeredAt)
+        let formatter = DateFormatter(); formatter.locale = Locale(identifier: "en_US"); formatter.dateFormat = "MMMM yyyy"
+        XCTAssertEqual(app.staticTexts["activity-month"].label, formatter.string(from: expected))
+        let first = assertCenteredSelection(app)
+        let firstID = first.identifier
+        XCTAssertTrue(first.label.contains(expected.formatted(.dateTime.month(.wide).day().locale(Locale(identifier: "en_US")))))
+        app.otherElements["activity-picker"].swipeRight()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, firstID)
+        for button in app.buttons.allElementsBoundByIndex where button.identifier.hasPrefix("activity-day-") {
+            XCTAssertTrue(button.label.contains(expected.formatted(.dateTime.month(.wide).locale(Locale(identifier: "en_US")))))
+        }
+        capture(app, "month-strip-registration-month")
+        app.buttons["activity-reset-today"].tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+        XCTAssertEqual(app.staticTexts["activity-month"].label, formatter.string(from: Date()))
+    }
+
+    func testHistoricalMonthHidesAdjacentMonthsAndCannotSwipeAcrossTheFirstDay() {
+        let app = launch()
+        let cal = Calendar.current
+        let previousMonth = cal.date(byAdding: .month, value: -1, to: cal.dateInterval(of: .month, for: Date())!.start)!
+        app.buttons["activity-month-picker"].tap()
+        let option = monthButton(app, for: previousMonth)
+        XCTAssertTrue(option.waitForExistence(timeout: 3))
+        option.tap()
+        let first = assertCenteredSelection(app)
+        let firstID = first.identifier
+        let previousDay = cal.date(byAdding: .day, value: -1, to: previousMonth)!
+        let previousSuffix = previousDay.formatted(.dateTime.year().month(.twoDigits).day(.twoDigits).locale(Locale(identifier: "en_US")))
+        XCTAssertFalse(app.buttons["activity-day-\(previousSuffix)"].exists)
+        let strip = app.otherElements["activity-picker"]
+        strip.swipeRight(velocity: .fast)
+        XCTAssertEqual(assertCenteredSelection(app).identifier, firstID)
+        strip.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.5)).tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, firstID)
+        capture(app, "month-strip-first-day")
+        let lastDay = cal.range(of: .day, in: .month, for: previousMonth)!.count
+        var selectedNumber = 1
+        while selectedNumber < lastDay {
+            let step = min(3, lastDay - selectedNumber)
+            let selected = assertCenteredSelection(app)
+            strip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+                .withOffset(CGVector(dx: CGFloat(step) * (selected.frame.width + 4), dy: 0)).tap()
+            selectedNumber += step
+        }
+        let last = assertCenteredSelection(app)
+        let lastID = last.identifier
+        let expectedLast = cal.date(byAdding: .day, value: lastDay - 1, to: previousMonth)!
+        XCTAssertTrue(last.label.contains(expectedLast.formatted(.dateTime.month(.wide).day().locale(Locale(identifier: "en_US")))))
+        let nextMonth = cal.date(byAdding: .month, value: 1, to: previousMonth)!
+        let nextSuffix = nextMonth.formatted(.dateTime.year().month(.twoDigits).day(.twoDigits).locale(Locale(identifier: "en_US")))
+        XCTAssertFalse(app.buttons["activity-day-\(nextSuffix)"].exists)
+        strip.swipeLeft(velocity: .fast)
+        XCTAssertEqual(assertCenteredSelection(app).identifier, lastID)
+        capture(app, "month-strip-last-day")
+        app.buttons["activity-month-picker"].tap()
+        XCTAssertTrue(monthButton(app, for: previousMonth).isSelected)
+        capture(app, "month-sheet-selected-history")
+        app.buttons["activity-month-close"].tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, lastID)
+        app.buttons["activity-month-picker"].tap()
+        monthButton(app, for: Date()).tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+    }
+
+    func testMonthPickerCanSelectAnEarlierYear() {
+        let app = launch(registrationDaysAgo: 800)
+        let cal = Calendar.current
+        let earlierYear = cal.date(byAdding: .year, value: -1, to: Date())!
+        app.buttons["activity-month-picker"].tap()
+        let option = monthButton(app, for: earlierYear)
+        let options = app.scrollViews["activity-month-options"]
+        for _ in 0..<5 {
+            if option.exists && option.isHittable { break }
+            options.swipeUp()
+        }
+        XCTAssertTrue(option.isHittable)
+        capture(app, "month-sheet-earlier-year")
+        option.tap()
+        let formatter = DateFormatter(); formatter.locale = Locale(identifier: "en_US"); formatter.dateFormat = "MMMM yyyy"
+        XCTAssertEqual(app.staticTexts["activity-month"].label, formatter.string(from: earlierYear))
+        _ = assertCenteredSelection(app)
+        app.buttons["activity-reset-today"].tap()
+        XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+    }
+
+    func testAccountRegisteredThisMonthHasNoMonthPicker() {
+        let app = launch(registrationDaysAgo: Calendar.current.component(.day, from: Date()) - 1)
+        XCTAssertTrue(app.staticTexts["activity-month"].exists)
+        XCTAssertFalse(app.buttons["activity-month-picker"].exists)
+        capture(app, "month-strip-single-month")
+    }
+
     func testRegistrationDayIsTheFirstEnabledDateAndStopsBackwardSwiping() {
-        let app = launch(registrationDaysAgo: 2), strip = app.otherElements["activity-picker"]
+        let daysAgo = min(2, Calendar.current.component(.day, from: Date()) - 1)
+        let app = launch(registrationDaysAgo: daysAgo), strip = app.otherElements["activity-picker"]
         strip.swipeRight()
         strip.swipeRight()
         let registration = assertCenteredSelection(app)
         let registrationID = registration.identifier
-        XCTAssertEqual(registrationID, dateButton(app, daysFromToday: -2).identifier)
+        XCTAssertEqual(registrationID, daysAgo == 0 ? "activity-today" : dateButton(app, daysFromToday: -daysAgo).identifier)
         XCTAssertTrue(registration.isEnabled)
-        let older = dateButton(app, daysFromToday: -3)
-        XCTAssertTrue(older.exists, "Earlier dates stay visible")
-        XCTAssertFalse(older.isEnabled)
+        let older = dateButton(app, daysFromToday: -daysAgo - 1)
+        if Calendar.current.component(.day, from: Date()) > daysAgo + 1 {
+            XCTAssertTrue(older.exists, "Earlier dates in the same month stay visible")
+            XCTAssertFalse(older.isEnabled)
+        } else {
+            XCTAssertFalse(older.exists, "Dates outside the selected month are hidden")
+        }
         for _ in 0..<3 {
             strip.swipeRight(velocity: .fast)
             XCTAssertEqual(assertCenteredSelection(app).identifier, registrationID)
@@ -43,16 +162,23 @@ final class ActivityDateStripUITests: XCTestCase {
                        "Tapping an earlier disabled date cannot select it")
         capture(app, "registration-lower-bound")
         strip.swipeLeft()
-        XCTAssertEqual(assertCenteredSelection(app).identifier, dateButton(app, daysFromToday: -1).identifier)
-        app.buttons["activity-reset-today"].tap()
+        let nextID = daysAgo > 1 ? dateButton(app, daysFromToday: -daysAgo + 1).identifier : "activity-today"
+        XCTAssertEqual(assertCenteredSelection(app).identifier, nextID)
+        if nextID != "activity-today" { app.buttons["activity-reset-today"].tap() }
         XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
     }
 
     func testNewAccountKeepsEarlierDatesVisibleButOnlyTodayEnabled() {
         let app = launch(registrationDaysAgo: 0), strip = app.otherElements["activity-picker"]
-        XCTAssertTrue(dateButton(app, daysFromToday: -1).exists)
-        XCTAssertFalse(dateButton(app, daysFromToday: -1).isEnabled)
-        XCTAssertFalse(dateButton(app, daysFromToday: 1).isEnabled)
+        XCTAssertFalse(app.buttons["activity-month-picker"].exists)
+        if Calendar.current.component(.day, from: Date()) > 1 {
+            XCTAssertTrue(dateButton(app, daysFromToday: -1).exists)
+            XCTAssertFalse(dateButton(app, daysFromToday: -1).isEnabled)
+        } else {
+            XCTAssertFalse(dateButton(app, daysFromToday: -1).exists)
+        }
+        let tomorrow = dateButton(app, daysFromToday: 1)
+        if tomorrow.exists { XCTAssertFalse(tomorrow.isEnabled) }
         for _ in 0..<2 {
             strip.swipeRight(velocity: .fast)
             XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
@@ -94,6 +220,10 @@ final class ActivityDateStripUITests: XCTestCase {
         let strip = app.otherElements["activity-picker"]
         XCTAssertTrue(strip.exists)
         strip.swipeRight()
+        if Calendar.current.component(.day, from: Date()) == 1 {
+            XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
+            return
+        }
         XCTAssertTrue(app.buttons["activity-reset-today"].waitForExistence(timeout: 3))
         XCTAssertEqual(app.buttons["activity-reset-today"].label, "Back to Today")
         XCTAssertFalse(today.isSelected)
@@ -111,7 +241,9 @@ final class ActivityDateStripUITests: XCTestCase {
     func testSuccessiveSwipesSelectEveryNewCenterAndReturnWithoutTappingADay() {
         let app = launch(), strip = app.otherElements["activity-picker"]
         let today = app.buttons["activity-today"]
-        for offset in 1...3 {
+        let steps = min(3, Calendar.current.component(.day, from: Date()) - 1)
+        for index in 0..<steps {
+            let offset = index + 1
             strip.swipeRight()
             let selected = assertCenteredSelection(app)
             let expected = Calendar.current.date(byAdding: .day, value: -offset, to: Date())!
@@ -119,7 +251,7 @@ final class ActivityDateStripUITests: XCTestCase {
             XCTAssertTrue(selected.label.contains(formatter.string(from: expected)), selected.label)
             XCTAssertFalse(today.isSelected)
         }
-        for _ in 1...3 { strip.swipeLeft(); _ = assertCenteredSelection(app) }
+        for _ in 0..<steps { strip.swipeLeft(); _ = assertCenteredSelection(app) }
         XCTAssertTrue(today.isSelected)
         strip.swipeLeft()
         XCTAssertTrue(today.isSelected, "Future dates cannot become the selection")
@@ -133,12 +265,18 @@ final class ActivityDateStripUITests: XCTestCase {
         strip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
             .withOffset(CGVector(dx: -(center.width + 4), dy: 0)).tap()
         let selected = assertCenteredSelection(app)
-        XCTAssertNotEqual(selected.identifier, "activity-today")
+        if Calendar.current.component(.day, from: Date()) > 1 {
+            XCTAssertNotEqual(selected.identifier, "activity-today")
+        } else {
+            XCTAssertEqual(selected.identifier, "activity-today")
+        }
     }
 
     func testRepeatedShortDragsFromTheSelectedDayDoNotBounceBackOnFirstAttempt() {
         let app = launch(), strip = app.otherElements["activity-picker"]
-        for offset in 1...8 {
+        let steps = min(8, Calendar.current.component(.day, from: Date()) - 1)
+        for index in 0..<steps {
+            let offset = index + 1
             let selected = assertCenteredSelection(app)
             let start = selected.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
             // Drag from the number itself, with a small diagonal component, rather than the strip edge.
@@ -150,7 +288,7 @@ final class ActivityDateStripUITests: XCTestCase {
             XCTAssertTrue(centered.label.contains(formatter.string(from: expected)), "First attempt failed: \(centered.label)")
         }
         capture(app, "date-ux-after-eight-short-drags")
-        app.buttons["activity-reset-today"].tap()
+        if steps > 0 { app.buttons["activity-reset-today"].tap() }
         XCTAssertEqual(assertCenteredSelection(app).identifier, "activity-today")
         strip.swipeRight(velocity: .fast)
         strip.swipeLeft(velocity: .fast)

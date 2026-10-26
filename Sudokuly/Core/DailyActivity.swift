@@ -9,6 +9,25 @@ enum DailyActivity {
         return firstDay...today
     }
 
+    static func months(in bounds: ClosedRange<Date>, calendar: Calendar) -> [Date] {
+        guard var month = calendar.dateInterval(of: .month, for: bounds.lowerBound)?.start else { return [] }
+        var months: [Date] = []
+        while month <= bounds.upperBound {
+            months.append(month)
+            guard let next = calendar.date(byAdding: .month, value: 1, to: month), next > month else { break }
+            month = next
+        }
+        return months
+    }
+
+    static func monthBounds(containing day: Date, within bounds: ClosedRange<Date>,
+                            calendar: Calendar) -> ClosedRange<Date>? {
+        guard let month = calendar.dateInterval(of: .month, for: day),
+              let lastDay = calendar.date(byAdding: .day, value: -1, to: month.end) else { return nil }
+        let first = max(month.start, bounds.lowerBound), last = min(lastDay, bounds.upperBound)
+        return first <= last ? first...last : nil
+    }
+
     static func activityInterval(around day: Date, bounds: ClosedRange<Date>, calendar: Calendar) -> DateInterval? {
         guard let visibleWeek = interval(for: week(containing: day, calendar: calendar), calendar: calendar),
               let start = calendar.date(byAdding: .day, value: -7, to: visibleWeek.start),

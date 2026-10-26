@@ -152,6 +152,7 @@ private struct ActivityDateStrip: View {
     @State private var refreshRevision = 0
     @State private var selectionFeedback = 0
     @State private var calendar = Calendar.autoupdatingCurrent
+    @State private var showMonthPicker = false
     private static let english = Locale(identifier: "en_US")
     private var selectedDay: Date {
         let offset = Int((-picker.offset / daySpacing).rounded())
@@ -160,9 +161,13 @@ private struct ActivityDateStrip: View {
     private var days: [Date] {
         (-4...4).compactMap { calendar.date(byAdding: .day, value: $0, to: picker.day) }
     }
-    private var bounds: ClosedRange<Date> {
+    private var accountBounds: ClosedRange<Date> {
         DailyActivity.dateBounds(registeredAt: registeredAt, today: today, calendar: calendar)
     }
+    private var bounds: ClosedRange<Date> {
+        DailyActivity.monthBounds(containing: picker.day, within: accountBounds, calendar: calendar) ?? accountBounds
+    }
+    private var availableMonths: [Date] { DailyActivity.months(in: accountBounds, calendar: calendar) }
     private struct LoadKey: Equatable {
         let day: Date
         let interval: DateInterval?
@@ -183,9 +188,26 @@ private struct ActivityDateStrip: View {
         let solvedDays = history.solvedDays(calendar: calendar)
         VStack(spacing: 12) {
             HStack(spacing: 8) {
-                Text(picker.day.formatted(.dateTime.month(.wide).year().locale(Self.english)))
-                    .font(AppFont.text(14, weight: .semibold))
-                    .accessibilityIdentifier("activity-month")
+                if availableMonths.count > 1 {
+                    Button {
+                        withoutAnimation { picker.cancelDrag() }
+                        showMonthPicker = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            monthTitle
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .accessibilityHidden(true)
+                        }
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Choose another month and year")
+                    .accessibilityIdentifier("activity-month-picker")
+                } else {
+                    monthTitle
+                }
                 Spacer(minLength: 4)
                 Button(action: resetToToday) {
                     Label("Back to Today", systemImage: "calendar")
@@ -213,8 +235,13 @@ private struct ActivityDateStrip: View {
                         .accessibilityHidden(true)
                     HStack(spacing: 4) {
                         ForEach(days, id: \.self) { day in
-                            dayButton(day, solved: solvedDays.contains(day))
-                                .frame(width: width)
+                            if calendar.isDate(day, equalTo: picker.day, toGranularity: .month) {
+                                dayButton(day, solved: solvedDays.contains(day))
+                                    .frame(width: width)
+                            } else {
+                                Color.clear.frame(width: width, height: 112)
+                                    .accessibilityHidden(true)
+                            }
                         }
                     }
                     .frame(width: 9 * width + 32, height: 112)
@@ -248,6 +275,12 @@ private struct ActivityDateStrip: View {
         .padding(.vertical, 4)
         .accessibilityElement(children: .contain)
         .sensoryFeedback(.selection, trigger: selectionFeedback)
+        .sheet(isPresented: $showMonthPicker) {
+            ActivityMonthSheet(months: availableMonths, selectedDay: picker.day, calendar: calendar) { month in
+                selectMonth(month)
+                showMonthPicker = false
+            }
+        }
         .task(id: loadKey) {
             guard !loadKey.interacting, loadKey.active, let interval = loadKey.interval else { return }
             await history.loadActivityAfterIdle(interval: interval)
@@ -260,6 +293,19 @@ private struct ActivityDateStrip: View {
         .onChange(of: registeredAt) { _, _ in refreshDate() }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in refreshDate() }
         .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in refreshDate() }
+    }
+
+    private var monthTitle: some View {
+        Text(picker.day.formatted(.dateTime.month(.wide).year().locale(Self.english)))
+            .font(AppFont.text(14, weight: .semibold))
+            .accessibilityIdentifier("activity-month")
+    }
+
+    private func selectMonth(_ month: Date) {
+        guard let range = DailyActivity.monthBounds(containing: month, within: accountBounds, calendar: calendar) else { return }
+        // Open historical months at their first available day; the current month returns to today.
+        let day = range.contains(today) ? today : range.lowerBound
+        moveSelection(to: day, within: accountBounds, feedback: true)
     }
 
     private func dayButton(_ day: Date, solved: Bool) -> some View {
@@ -324,7 +370,7 @@ private struct ActivityDateStrip: View {
 
     private func resetToToday() {
         today = calendar.startOfDay(for: Date())
-        center(today, feedback: true)
+        moveSelection(to: today, within: accountBounds, feedback: true)
     }
 
     private func withoutAnimation(_ changes: () -> Void) {
@@ -334,10 +380,14 @@ private struct ActivityDateStrip: View {
     }
 
     private func center(_ day: Date, feedback: Bool = false) {
-        guard canCenter(day) else { return }
+        moveSelection(to: day, within: bounds, feedback: feedback)
+    }
+
+    private func moveSelection(to day: Date, within range: ClosedRange<Date>, feedback: Bool = false) {
+        guard range.contains(day) else { return }
         let previous = picker.day
-        if reduceMotion || !feedback { withoutAnimation { picker.center(day, bounds: bounds) } }
-        else { withAnimation(.easeOut(duration: 0.16)) { picker.center(day, bounds: bounds) } }
+        if reduceMotion || !feedback { withoutAnimation { picker.center(day, bounds: range) } }
+        else { withAnimation(.easeOut(duration: 0.16)) { picker.center(day, bounds: range) } }
         if feedback && previous != picker.day { selectionFeedback += 1 }
     }
 
@@ -358,10 +408,12 @@ private struct ActivityDateStrip: View {
         let followedToday = calendar.isDate(picker.day, inSameDayAs: today)
         calendar = .autoupdatingCurrent
         today = calendar.startOfDay(for: Date())
-        if followedToday { center(today) }
+        if followedToday { moveSelection(to: today, within: accountBounds) }
         else {
-            center(max(bounds.lowerBound, min(today, calendar.startOfDay(for: picker.day))))
+            moveSelection(to: max(accountBounds.lowerBound, min(today, calendar.startOfDay(for: picker.day))),
+                          within: accountBounds)
         }
+        if availableMonths.count < 2 { showMonthPicker = false }
         refreshRevision += 1
     }
 
@@ -370,4 +422,87 @@ private struct ActivityDateStrip: View {
         refreshRevision += 1
     }
 
+}
+
+private struct ActivityMonthSheet: View {
+    let months: [Date]
+    let selectedDay: Date
+    let calendar: Calendar
+    let select: (Date) -> Void
+    @Environment(\.dismiss) private var dismiss
+    private static let english = Locale(identifier: "en_US")
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 3)
+    private var monthsByYear: [Date: [Date]] {
+        Dictionary(grouping: months) { calendar.dateInterval(of: .year, for: $0)?.start ?? $0 }
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Text("Choose month")
+                    .font(AppFont.text(22, weight: .semibold))
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+                CircleIcon(symbol: "xmark", label: "Close month picker", backgroundColor: .white) { dismiss() }
+                    .accessibilityIdentifier("activity-month-close")
+            }
+            .padding(.horizontal, 24)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 24) {
+                        ForEach(monthsByYear.keys.sorted(by: >), id: \.self) { year in
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text(year.formatted(.dateTime.year().locale(Self.english)))
+                                    .font(AppFont.text(16, weight: .semibold))
+                                    .accessibilityAddTraits(.isHeader)
+                                LazyVGrid(columns: columns, spacing: 10) {
+                                    ForEach(monthsByYear[year] ?? [], id: \.self) { month in
+                                        monthButton(month)
+                                    }
+                                }
+                            }
+                            .id(year)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                }
+                .accessibilityIdentifier("activity-month-options")
+                .onAppear {
+                    if let year = calendar.dateInterval(of: .year, for: selectedDay)?.start {
+                        proxy.scrollTo(year, anchor: .top)
+                    }
+                }
+            }
+        }
+        .padding(.top, 24)
+        .foregroundStyle(Palette.ink)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Palette.paper)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("activity-month-sheet")
+    }
+
+    private func monthButton(_ month: Date) -> some View {
+        let selected = calendar.isDate(month, equalTo: selectedDay, toGranularity: .month)
+        let identifier = String(format: "activity-month-%04d-%02d", calendar.component(.year, from: month),
+                                calendar.component(.month, from: month))
+        return Button { select(month) } label: {
+            HStack(spacing: 6) {
+                Text(month.formatted(.dateTime.month(.abbreviated).locale(Self.english)))
+                    .font(AppFont.text(15, weight: .semibold))
+                if selected {
+                    Image(systemName: "checkmark").font(.system(size: 11, weight: .semibold))
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .foregroundStyle(selected ? .white : Palette.ink)
+            .background(selected ? Palette.ink : .white, in: RoundedRectangle(cornerRadius: 14))
+        }
+        .buttonStyle(PressStyle())
+        .accessibilityLabel(month.formatted(.dateTime.month(.wide).year().locale(Self.english)))
+        .accessibilityAddTraits(selected ? .isSelected : [])
+        .accessibilityIdentifier(identifier)
+    }
 }

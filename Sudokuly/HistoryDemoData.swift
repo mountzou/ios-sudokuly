@@ -6,6 +6,16 @@ enum HistoryDemoAction {
 }
 
 enum HistoryDemoData {
+    static func solvedYearDays(today: Date, calendar: Calendar) -> Set<Date> {
+        Set((0..<365).compactMap { offset -> Date? in
+            // A repeatable visual fixture, isolated from the six demo history records.
+            let rhythm = (offset * 37 + offset / 11 * 17) % 100
+            let threshold = offset < 70 ? 76 : offset < 180 ? 54 : 34
+            guard rhythm < threshold, !(110...122).contains(offset), !(260...274).contains(offset) else { return nil }
+            return calendar.date(byAdding: .day, value: -offset, to: calendar.startOfDay(for: today))
+        })
+    }
+
     static func records(ownerID: String, now: Date = Date()) -> [GameRecord] {
         let samples: [(Difficulty, GameOutcome, TimeInterval, Int)] = [
             (.easy, .won, 342, 0),

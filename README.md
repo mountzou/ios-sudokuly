@@ -31,7 +31,7 @@ Dependencies are pinned in `sudokuly.xcodeproj/project.xcworkspace/xcshareddata/
 
 Choose Easy, Medium, Hard, or Expert on the home screen. Each selection generates a new puzzle locally on a background task, with randomized backtracking and a solver that rejects clue removals introducing a second solution.
 
-The home activity strip permits selection from the account's Firebase Authentication creation day through today, using the device's local calendar and timezone. Earlier and future dates remain visible but dimmed and disabled. Swipes, taps and accessibility actions respect the same bounds, and activity queries exclude days before registration. The lower bound follows the signed-in account and refreshes with metadata, day and timezone changes. If creation metadata is unavailable or ahead of the device clock, only today is selectable until a usable creation date is available.
+The home activity strip shows only the selected month and year, using the device's local calendar and timezone. Swipes, taps and accessibility actions stay within that month and the account's Firebase Authentication creation day through today. Dates within the month before registration or after today remain dimmed and disabled; adjacent months are hidden. When more than one month is available, tapping the month/year title opens a sheet of available months grouped by year, from registration through the current month. Historical months open at their first available day; choosing the current month or **Back to Today** selects today. Accounts created in the current month have a plain title without a month picker. Activity queries stay within the selected month's available days. Bounds refresh with metadata, day and timezone changes. If creation metadata is unavailable or ahead of the device clock, only today is selectable until a usable creation date is available.
 
 | Level | Target givens | Time limit |
 | --- | ---: | ---: |
@@ -51,6 +51,8 @@ The countdown is centered between Leave game and Pause at the top of gameplay. T
 Solving the entire grid, making a third mistake, or reaching zero on the clock opens the appropriate result screen and records one history entry. **Back to home** discards the board while keeping the result in memory. Leaving an active puzzle asks for confirmation and does not create a history entry. Pause hides the board and stops the timer; switching away from the app also pauses it, and the player resumes manually.
 
 ## Results and cloud history
+
+**Your progress** includes **Your rhythm**, a horizontally scrolling weekly grid of the last 365 local calendar days, below the Played/Solved/Focus statistics and above the game history. New accounts see the empty grid below the empty-history message. Dark cells mark days with at least one solved Sudoku; the summary counts distinct solved days within the account's available dates. The full year loads through the existing paginated activity-range query and updates immediately for newly completed games. Loading, offline and retry states remain visible. Privacy Policy stays fixed at the bottom of Account. The **Sudokuly Demo** scheme enables `--activity-year-demo`, an explicitly labeled, repeatable visual fixture for this card.
 
 The immediate win screen uses a vector illustration of a person lifting a trophy, matching the Pause and Leave game artwork. It shows the victory title, description, Level/Time/Mistakes stats, and home/history actions. The content is centered vertically within the available screen space and can scroll when it does not fit, as in Pause and Leave game. The brand, "Puzzle complete" eyebrow, solved-board miniature, history confirmation label, and closing tagline are omitted from this screen; game recording continues normally.
 
@@ -97,7 +99,9 @@ For the full MVP review in one command, use **Node.js 22+**, Java 21+ and Xcode,
 
 Build logs, the verification report and screenshots are in `Verification/`. Simulator validation is distinct from physical iPhone or App Store validation.
 
-The 1.0.0 (1) release checks, source fingerprints, signed archive audit, Apple validation and upload evidence are in [Verification/release-1.0.0/README.md](Verification/release-1.0.0/README.md). The user subsequently confirmed successful real-iPhone testing and authorized App Review submission. Version 1.0.0 (1) is Waiting for Review with manual release; see [submission record](Verification/app-review-1.0.0/README.md).
+Version 1.0.2 (3) was submitted to App Review on October 25, 2026. The app owner confirmed its approval and publication on the App Store on October 26, 2026. Its public release notes are `UI/UX improvements`. Final validation passed 57 core tests, 39 Firestore rules tests, and 148 iOS unit/SDK/UI tests. Release checks, source fingerprints, signing audits, Apple validation and upload evidence are in `Verification/release-1.0.2/`; the [submission record](Verification/app-review-1.0.2/submission.json) records the selected build and submission ID.
+
+The original 1.0.0 (1) release checks and historical submission evidence remain in [Verification/release-1.0.0/README.md](Verification/release-1.0.0/README.md) and [Verification/app-review-1.0.0/README.md](Verification/app-review-1.0.0/README.md).
 
 ## Project maintenance
 
