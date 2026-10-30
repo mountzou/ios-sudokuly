@@ -19,14 +19,17 @@ struct IllustratedMessageHeader: View {
     var titleTracking: CGFloat = -1.1
     var messageSize: CGFloat = 14
     var titleMessageSpacing: CGFloat = 22
+    var showsIllustration = true
 
     var body: some View {
         VStack(spacing: 22) {
-            Image(illustration)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 160, height: 160)
-                .accessibilityHidden(true)
+            if showsIllustration {
+                Image(illustration)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 160, height: 160)
+                    .accessibilityHidden(true)
+            }
             VStack(spacing: titleMessageSpacing) {
                 Text(title)
                     .font(AppFont.text(titleSize, weight: titleWeight)).tracking(titleTracking)

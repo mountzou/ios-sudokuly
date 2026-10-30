@@ -1,0 +1,41 @@
+{
+  "fill" : {
+    "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "blur-material" : null,
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "01-dark-tiles.svg",
+          "name" : "01 Dark Tiles"
+        },
+        {
+          "glass" : false,
+          "image-name" : "02-light-tiles.svg",
+          "name" : "02 Light Tiles"
+        },
+        {
+          "glass" : false,
+          "image-name" : "00-white-background.svg",
+          "name" : "00 White Background"
+        }
+      ],
+      "lighting" : "individual",
+      "name" : "Sudokuly Flat Grid",
+      "shadow" : {
+        "kind" : "none",
+        "opacity" : 0
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}

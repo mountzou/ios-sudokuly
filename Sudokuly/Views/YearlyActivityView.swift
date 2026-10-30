@@ -93,25 +93,24 @@ struct YearlyActivityView: View {
                 Spacer(minLength: 4)
                 RoundedRectangle(cornerRadius: 2).fill(Palette.ink.opacity(0.08)).frame(width: 8, height: 8)
                     .accessibilityHidden(true)
-                Text("No solve").font(AppFont.text(9))
+                Text("Rest day").font(AppFont.text(9))
                 RoundedRectangle(cornerRadius: 2).fill(Palette.ink).frame(width: 8, height: 8)
                     .accessibilityHidden(true)
                 Text("Solved").font(AppFont.text(9))
             }
             .foregroundStyle(Palette.muted)
 
-            if history.isLoadingActivity {
-                Label("Loading activity…", systemImage: "arrow.triangle.2.circlepath")
+            if !history.isLoadingActivity {
+                if let error = history.activityError {
+                    HStack {
+                        Text(error)
+                        Button("Retry") { history.invalidateActivityCache(); revision += 1 }
+                            .font(AppFont.text(10, weight: .semibold))
+                    }
                     .font(AppFont.text(10)).foregroundStyle(Palette.muted)
-            } else if let error = history.activityError {
-                HStack {
-                    Text(error)
-                    Button("Retry") { history.invalidateActivityCache(); revision += 1 }
-                        .font(AppFont.text(10, weight: .semibold))
+                } else if history.isActivityFromCache {
+                    Text("Showing offline activity").font(AppFont.text(10)).foregroundStyle(Palette.muted)
                 }
-                .font(AppFont.text(10)).foregroundStyle(Palette.muted)
-            } else if history.isActivityFromCache {
-                Text("Showing offline activity").font(AppFont.text(10)).foregroundStyle(Palette.muted)
             }
         }
         .padding(18)

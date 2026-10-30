@@ -102,10 +102,12 @@ extension GameOutcome {
 struct GameResultHeader: View {
     let outcome: GameOutcome
     let titleIdentifier: String
+    var showsIllustration = true
 
     var body: some View {
         IllustratedMessageHeader(illustration: outcome.illustration, title: outcome.title,
-                                 message: outcome.detail, titleID: titleIdentifier)
+                                 message: outcome.detail, titleID: titleIdentifier,
+                                 showsIllustration: showsIllustration)
     }
 }
 

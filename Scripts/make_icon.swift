@@ -4,10 +4,10 @@ import CoreText
 let size = 1024
 let image = NSImage(size: NSSize(width: size, height: size))
 image.lockFocus()
-NSColor(red: 0.955, green: 0.955, blue: 0.945, alpha: 1).setFill()
+NSColor.white.setFill()
 NSBezierPath(rect: NSRect(x: 0, y: 0, width: size, height: size)).fill()
-let side: CGFloat = 142
-let gap: CGFloat = 27
+let side: CGFloat = 135
+let gap: CGFloat = 30
 let start: CGFloat = (1024 - side * 3 - gap * 2) / 2
 for row in 0..<3 {
     for column in 0..<3 {

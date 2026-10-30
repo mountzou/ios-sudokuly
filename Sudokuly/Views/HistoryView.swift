@@ -119,6 +119,11 @@ struct HistoryView: View {
                             .multilineTextAlignment(.center)
                     }
                     YearlyActivityView(history: history, registeredAt: registeredAt)
+                        .padding(.bottom, 32)
+                        .overlay(alignment: .bottom) {
+                            Rectangle().fill(Palette.line).frame(height: 1)
+                                .accessibilityHidden(true)
+                        }
                     ForEach(days, id: \.self) { day in
                         VStack(spacing: 12) {
                             Text(dayLabel(day))
@@ -263,6 +268,7 @@ private struct HistoryRow: View {
 struct HistoryDetailView: View {
     let record: GameRecord
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(spacing: 0) {
@@ -283,38 +289,59 @@ struct HistoryDetailView: View {
 
             GeometryReader { geometry in
                 ScrollView {
-                    VStack(spacing: 28) {
-                        GameResultHeader(outcome: record.outcome, titleIdentifier: "history-detail-title")
-                        VStack(spacing: 24) {
-                            VStack(spacing: 6) {
-                                Text(record.finishedAt, format: AppFormatting.date)
-                                    .font(AppFont.text(16, weight: .medium)).tracking(-0.3)
-                                    .accessibilityIdentifier("history-detail-date")
-                                Text(record.finishedAt, format: AppFormatting.time)
-                                    .font(AppFont.text(12)).foregroundStyle(Palette.muted)
-                                    .accessibilityIdentifier("history-detail-time")
-                            }
-                            .multilineTextAlignment(.center)
-
-                            recapStats
-                        }
+                    IllustratedViewportLayout(viewportHeight: geometry.size.height, maximumWidth: 450,
+                                              horizontalInset: 32, illustrationSpacing: 22, bottomInset: 24) {
+                        Image(record.outcome.illustration)
+                            .resizable()
+                            .scaledToFit()
+                            .accessibilityHidden(true)
+                        detailContent
                     }
-                    .padding(.vertical, 24)
-                    .modifier(IllustratedContentWidth())
-                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
                 }
+                .scrollBounceBehavior(.basedOnSize)
                 .scrollIndicators(.hidden)
+                .accessibilityIdentifier("history-detail-content")
             }
         }
         .background(Palette.paper.ignoresSafeArea()).foregroundStyle(Palette.ink)
         .toolbar(.hidden, for: .navigationBar)
     }
 
+    private var detailContent: some View {
+        VStack(spacing: 28) {
+            GameResultHeader(outcome: record.outcome, titleIdentifier: "history-detail-title",
+                             showsIllustration: false)
+            VStack(spacing: 24) {
+                VStack(spacing: 6) {
+                    Text(record.finishedAt, format: AppFormatting.date)
+                        .font(AppFont.text(16, weight: .medium)).tracking(-0.3)
+                        .accessibilityIdentifier("history-detail-date")
+                    Text(record.finishedAt, format: AppFormatting.time)
+                        .font(AppFont.text(12)).foregroundStyle(Palette.muted)
+                        .accessibilityIdentifier("history-detail-time")
+                }
+                .multilineTextAlignment(.center)
+
+                recapStats
+            }
+        }
+    }
+
     private var recapStats: some View {
-        HStack(alignment: .top, spacing: 12) {
-            recapStat("Level", value: record.difficulty.title)
-            recapStat("Time", value: clockText(record.duration))
-            recapStat("Mistakes", value: "\(record.mistakes) / 3")
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 20) {
+                    recapStat("Level", value: record.difficulty.title)
+                    recapStat("Time", value: clockText(record.duration))
+                    recapStat("Mistakes", value: "\(record.mistakes) / 3")
+                }
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    recapStat("Level", value: record.difficulty.title)
+                    recapStat("Time", value: clockText(record.duration))
+                    recapStat("Mistakes", value: "\(record.mistakes) / 3")
+                }
+            }
         }
         .padding(.vertical, 24)
         .overlay(alignment: .top) {
@@ -337,5 +364,6 @@ struct HistoryDetailView: View {
         .multilineTextAlignment(.center)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(label): \(value)")
+        .accessibilityIdentifier("history-detail-stat-\(label.lowercased())")
     }
 }

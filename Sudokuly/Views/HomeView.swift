@@ -353,9 +353,26 @@ private struct ActivityDateStrip: View {
                 .lineLimit(1).minimumScaleFactor(0.7)
             Text(day.formatted(.dateTime.day().locale(Self.english)))
                 .font(AppFont.text(25, weight: .semibold))
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 16, weight: .semibold))
-                .opacity(solved ? 1 : 0)
+            Group {
+                if solved {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Palette.ink)
+                } else {
+                    Circle()
+                        .fill(Palette.muted)
+                        .overlay {
+                            Path { path in
+                                path.move(to: CGPoint(x: 5.5, y: 11))
+                                path.addLine(to: CGPoint(x: 10.5, y: 5))
+                            }
+                            .stroke(Palette.paper, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+                        }
+                        .frame(width: 16, height: 16)
+                }
+            }
+                .opacity(solved || (canCenter(day) && !calendar.isDate(day, inSameDayAs: today)
+                                     && !history.isLoadingActivity && history.activityError == nil) ? 1 : 0)
                 .accessibilityHidden(true)
         }
         .frame(maxWidth: .infinity)

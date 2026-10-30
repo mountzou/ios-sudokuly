@@ -11,6 +11,7 @@ struct ProviderSignInButton: View {
     let provider: Provider
     let action: () -> Void
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Button(action: action) {
@@ -25,11 +26,15 @@ struct ProviderSignInButton: View {
                     Text(provider.title)
                 }
                 .font(AppFont.relativeText(17, weight: .medium))
-                .lineLimit(1)
-                .minimumScaleFactor(0.85)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.85)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             }
+            .padding(.horizontal, dynamicTypeSize.isAccessibilitySize ? 16 : 0)
+            .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 12 : 0)
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .frame(minHeight: 52)
             .foregroundStyle(provider == .apple ? Color.white : Palette.ink)
             .background(provider == .apple ? Color.black : Color.white,
                         in: RoundedRectangle(cornerRadius: 12))
