@@ -5,8 +5,15 @@ struct AuthenticationRootView: View {
 
     var body: some View {
         Group {
-            if authentication.isRestoring {
-                VStack(spacing: 24) { BrandMark(); ProgressView().tint(Palette.ink) }
+            if authentication.isRestoring || isLoadingPreview {
+                VStack(spacing: 24) {
+                    BrandMark()
+                    MetaballLoadingView()
+                        .frame(width: 32, height: 32)
+                        .frame(height: 20)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Loading")
+                }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Palette.paper.ignoresSafeArea())
             } else if let account = authentication.account {
@@ -16,6 +23,14 @@ struct AuthenticationRootView: View {
                 SignInView()
             }
         }
+    }
+
+    private var isLoadingPreview: Bool {
+        #if DEBUG && targetEnvironment(simulator)
+        return authentication.isTesting && ProcessInfo.processInfo.arguments.contains("--loading-preview")
+        #else
+        return false
+        #endif
     }
 
     private var isHistoryDemo: Bool {

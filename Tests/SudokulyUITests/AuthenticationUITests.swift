@@ -119,7 +119,7 @@ final class AuthenticationUITests: XCTestCase {
         XCTAssertEqual(apple.frame.minY - description.frame.maxY, 28, accuracy: 1)
         XCTAssertEqual(google.frame.minY - apple.frame.maxY, 14, accuracy: 1)
         XCTAssertEqual(privacyFrame.minY - google.frame.maxY, 28, accuracy: 1)
-        XCTAssertEqual(version.frame.minY - privacyFrame.maxY, 10, accuracy: 1)
+        XCTAssertEqual(version.frame.minY - privacyFrame.maxY, 20, accuracy: 1)
         for button in [apple, google] {
             XCTAssertEqual(button.frame.height, 52, accuracy: 1)
             XCTAssertEqual(button.frame.width, min(420, screen.width - 56), accuracy: 1)

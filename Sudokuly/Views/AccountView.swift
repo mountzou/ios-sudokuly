@@ -24,38 +24,16 @@ struct AccountView: View {
 
             GeometryReader { geometry in
                 ScrollView {
-                    VStack(spacing: 25) {
+                    IllustratedViewportLayout(viewportHeight: geometry.size.height) {
                         Image("AccountProfile")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 160, height: 160)
                             .accessibilityHidden(true)
-                        if let account = authentication.account {
-                            VStack(spacing: 8) {
-                                Text(account.name ?? "Your account")
-                                    .font(AppFont.text(25, weight: .bold)).tracking(-0.8)
-                                if let email = account.email {
-                                    Text(email)
-                                        .font(AppFont.text(13)).foregroundStyle(Palette.muted)
-                                        .accessibilityIdentifier("account-email")
-                                }
-                            }
-                        }
-                        PrimaryButton(title: "Sign out", symbol: "rectangle.portrait.and.arrow.right") { confirmSignOut = true }
-                            .accessibilityIdentifier("sign-out")
-                        Button("Delete account") { confirmDelete = true }
-                            .font(AppFont.text(13, weight: .medium)).foregroundStyle(Palette.error)
-                            .frame(minHeight: 44)
-                            .accessibilityIdentifier("delete-account")
-                        if authentication.isBusy { ProgressView().tint(Palette.ink) }
-                        if let error = authentication.errorMessage {
-                            Text(error).font(AppFont.text(12)).foregroundStyle(Palette.error).multilineTextAlignment(.center)
-                        }
+                        accountContent
                     }
-                    .padding(28)
-                    .frame(maxWidth: 470)
-                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
                 }
+                .scrollBounceBehavior(.basedOnSize)
+                .accessibilityIdentifier("account-content")
             }
 
             Link(destination: AppLinks.privacyPolicy) {
@@ -89,5 +67,33 @@ struct AccountView: View {
         } message: {
             Text("Your sudokuly account and game history will be permanently deleted. You may need to confirm with Apple or Google first.")
         }
+    }
+
+    private var accountContent: some View {
+        VStack(spacing: 25) {
+            if let account = authentication.account {
+                VStack(spacing: 8) {
+                    Text(account.name ?? "Your account")
+                        .font(AppFont.text(25, weight: .bold)).tracking(-0.8)
+                        .accessibilityIdentifier("account-name")
+                    if let email = account.email {
+                        Text(email)
+                            .font(AppFont.text(13)).foregroundStyle(Palette.muted)
+                            .accessibilityIdentifier("account-email")
+                    }
+                }
+            }
+            PrimaryButton(title: "Sign out", symbol: "rectangle.portrait.and.arrow.right") { confirmSignOut = true }
+                .accessibilityIdentifier("sign-out")
+            Button("Delete account") { confirmDelete = true }
+                .font(AppFont.text(13, weight: .medium)).foregroundStyle(Palette.error)
+                .frame(minHeight: 44)
+                .accessibilityIdentifier("delete-account")
+            if authentication.isBusy { ProgressView().tint(Palette.ink) }
+            if let error = authentication.errorMessage {
+                Text(error).font(AppFont.text(12)).foregroundStyle(Palette.error)
+            }
+        }
+        .multilineTextAlignment(.center)
     }
 }

@@ -2,22 +2,23 @@ import SwiftUI
 
 struct SignInView: View {
     @Environment(AuthenticationSession.self) private var authentication
+    @ScaledMetric(relativeTo: .body) private var versionFontSize: CGFloat = 11
 
     var body: some View {
         GeometryReader { geometry in
+            let viewportHeight = geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
             ScrollView {
-                SignInViewportLayout(viewportHeight: geometry.size.height) {
+                SignInViewportLayout(viewportHeight: viewportHeight, topInset: geometry.safeAreaInsets.top) {
                     Image("LoginSudoku")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 160, height: 160)
                         .accessibilityHidden(true)
                     loginContent
                 }
             }
             .scrollBounceBehavior(.basedOnSize)
+            .ignoresSafeArea(edges: .bottom)
         }
-        .ignoresSafeArea()
         .background(Palette.paper.ignoresSafeArea())
         .foregroundStyle(Palette.ink)
     }
@@ -52,8 +53,8 @@ struct SignInView: View {
                     .multilineTextAlignment(.center)
                     .accessibilityIdentifier("auth-error")
             }
-            VStack(spacing: 10) {
-                VStack(spacing: 3) {
+            VStack(spacing: 20) {
+                VStack(spacing: 7) {
                     Text("By signing in, you acknowledge our")
                         .multilineTextAlignment(.center)
                         .accessibilityIdentifier("privacy-notice")
@@ -77,7 +78,7 @@ struct SignInView: View {
                 .font(AppFont.relativeText(13))
 
                 Text("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")")
-                    .font(AppFont.relativeText(11))
+                    .font(.system(size: versionFontSize, weight: .regular, design: .monospaced))
                     .accessibilityIdentifier("appVersion")
             }
             .foregroundStyle(Palette.muted)
@@ -85,10 +86,11 @@ struct SignInView: View {
     }
 }
 
-/// Uses Flytly's login geometry, including the 5% bottom inset and compact-screen scrolling.
+/// Aligns the illustration's bottom with the screen midpoint, preserving room for sign-in content.
 private struct SignInViewportLayout: Layout {
     let viewportHeight: CGFloat
-    private let logoSize: CGFloat = 160
+    let topInset: CGFloat
+    private let preferredLogoSize: CGFloat = 220
     private let gap: CGFloat = 24
     private var bottomInset: CGFloat { viewportHeight * 0.05 }
 
@@ -96,20 +98,27 @@ private struct SignInViewportLayout: Layout {
         min(420, max(0, width - 56))
     }
 
+    private func logoSize(footerHeight: CGFloat) -> CGFloat {
+        let available = viewportHeight - topInset - 24 - gap - footerHeight - bottomInset
+        return min(preferredLogoSize, max(160, available))
+    }
+
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let width = proposal.width ?? 390
         let footer = subviews[1].sizeThatFits(.init(width: footerWidth(width), height: nil))
+        let logoSize = logoSize(footerHeight: footer.height)
         let minimumHeight = 24 + logoSize + gap + footer.height + bottomInset
-        return CGSize(width: width, height: max(viewportHeight, minimumHeight))
+        return CGSize(width: width, height: max(viewportHeight - topInset, minimumHeight))
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let width = footerWidth(bounds.width)
         let footer = subviews[1].sizeThatFits(.init(width: width, height: nil))
+        let logoSize = logoSize(footerHeight: footer.height)
         let footerTop = bounds.maxY - bottomInset - footer.height
-        let preferredLogoCenter = bounds.minY + viewportHeight * 0.40
-        let logoCenter = min(preferredLogoCenter, footerTop - gap - logoSize / 2)
-        subviews[0].place(at: CGPoint(x: bounds.midX, y: logoCenter), anchor: .center,
+        let preferredLogoBottom = bounds.minY + max(viewportHeight * 0.5 - topInset, 24 + logoSize)
+        let logoBottom = min(preferredLogoBottom, footerTop - gap)
+        subviews[0].place(at: CGPoint(x: bounds.midX, y: logoBottom), anchor: .bottom,
                           proposal: .init(width: logoSize, height: logoSize))
         subviews[1].place(at: CGPoint(x: bounds.midX, y: footerTop), anchor: .top,
                           proposal: .init(width: width, height: footer.height))

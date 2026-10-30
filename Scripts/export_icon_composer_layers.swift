@@ -3,15 +3,15 @@ import Foundation
 
 // Export the existing code-drawn icon, without changing the bundled AppIcon.
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-let output = root.appendingPathComponent("Design/IconComposer/sudokuly-v1")
+let output = root.appendingPathComponent(CommandLine.arguments.dropFirst().first ?? "Design/IconComposer/sudokuly-v1")
 let sourceURL = root.appendingPathComponent("Sudokuly/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png")
 let source = NSBitmapImageRep(data: try Data(contentsOf: sourceURL))!
 let size = 1024
-let side: CGFloat = 142
-let gap: CGFloat = 27
+let side: CGFloat = 135
+let gap: CGFloat = 30
 let radius: CGFloat = 23
-let start: CGFloat = 272
-let background = NSColor(red: 0.955, green: 0.955, blue: 0.945, alpha: 1)
+let start: CGFloat = (CGFloat(size) - side * 3 - gap * 2) / 2
+let background = NSColor.white
 let dark = NSColor(calibratedWhite: 0.12, alpha: 1)
 let muted = NSColor(calibratedWhite: 0.77, alpha: 1)
 let bounds = NSRect(x: 0, y: 0, width: size, height: size)
@@ -157,7 +157,7 @@ let manifest: [String: Any] = [
     "backgroundSRGB": sourceHex(0, 0),
     "darkSRGB": sourceHex(300, 300),
     "lightSRGB": sourceHex(650, 300),
-    "tileSize": 142, "gap": 27, "cornerRadius": 23, "outerMargin": 272,
+    "tileSize": Int(side), "gap": Int(gap), "cornerRadius": Int(radius), "outerMargin": Double(start),
     "foregroundLayers": ["SVG/01-dark-tiles.svg", "SVG/02-light-tiles.svg"],
     "sourceRedrawComparison": flatCheck,
     "pngRecompositionComparison": compositeCheck,
